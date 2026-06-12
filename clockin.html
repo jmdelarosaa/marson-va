@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>JumpStart Clock-In</title>
+  <link rel="manifest" href="manifest.json">
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0;}
+    :root{
+      --bg:#0d1b2a;--surf:#1a2d42;--surf2:#243447;
+      --accent:#38bdf8;--accDim:#0ea5e9;
+      --text:#f0f9ff;--dim:#94a3b8;
+      --green:#22c55e;--orange:#f97316;--blue:#3b82f6;--red:#ef4444;--yellow:#eab308;
+    }
+    html,body{height:100%;overflow:hidden;}
+    body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;display:flex;flex-direction:column;}
+
+    /* ── Header ── */
+    .hdr{background:var(--surf);padding:12px 20px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(255,255,255,.08);flex-shrink:0;gap:12px;}
+    .logo{font-size:18px;font-weight:800;color:var(--accent);white-space:nowrap;}
+    .logo span{color:var(--text);font-weight:400;}
+    .clock-wrap{text-align:center;flex:1;}
+    .clock-time{font-size:26px;font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:1px;}
+    .clock-date{font-size:11px;color:var(--dim);margin-top:2px;}
+    .net-wrap{text-align:right;font-size:11px;color:var(--dim);min-width:60px;}
+    .dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--green);vertical-align:middle;margin-right:3px;}
+    .dot.off{background:var(--red);}
+    .dot.sync{background:var(--yellow);animation:blink 1s infinite;}
+    @keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+
+    /* ── Offline banner ── */
+    .banner{background:#7c2d12;color:#fef3c7;text-align:center;padding:8px 16px;font-size:13px;font-weight:500;display:none;flex-shrink:0;}
+    .banner.show{display:block;}
+
+    /* ── Content ── */
+    .content{flex:1;overflow-y:auto;padding:18px 20px;}
+    .screen{display:none;}
+    .screen.active{display:block;}
+    .sec-title{font-size:12px;font-weight:600;color:var(--dim);text-transform:uppercase;letter-spacing:1px;margin-bottom:14px;}
+
+    /* ── Staff grid ── */
+    .staff-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px;}
+    .s-card{background:var(--surf);border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:18px 12px;text-align:center;cursor:pointer;transition:.15s;-webkit-tap-highlight-color:transparent;user-select:none;}
+    .s-card:active{background:var(--surf2);border-color:var(--accent);transform:scale(.97);}
+    .avatar{width:48px;height:48px;border-radius:50%;margin:0 auto 10px;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;color:#fff;}
+    .s-name{font-size:13px;font-weight:600;line-height:1.3;}
+    .sbadge{display:inline-block;margin-top:5px;padding:2px 7px;border-radius:20px;font-size:10px;font-weight:600;text-transform:uppercase;}
+    .b-in{background:rgba(34,197,94,.18);color:var(--green);}
+    .b-brk{background:rgba(249,115,22,.18);color:var(--orange);}
+    .b-out{background:rgba(148,163,184,.14);color:var(--dim);}
+    .b-none{background:rgba(148,163,184,.08);color:var(--dim);}
+
+    /* ── Action screen ── */
+    .back-btn{display:flex;align-items:center;gap:6px;color:var(--accent);cursor:pointer;font-size:14px;font-weight:500;margin-bottom:20px;width:fit-content;}
+    .back-btn:active{opacity:.7;}
+    .profile{text-align:center;margin-bottom:28px;}
+    .profile .av-lg{width:74px;height:74px;border-radius:50%;margin:0 auto 12px;display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:700;color:#fff;}
+    .profile .pname{font-size:22px;font-weight:700;margin-bottom:5px;}
+    .profile .pstatus{font-size:13px;color:var(--dim);}
+    .profile .plast{font-size:12px;color:var(--dim);margin-top:3px;}
+    .act-grid{display:grid;gap:10px;max-width:340px;margin:0 auto;}
+    .act-btn{padding:18px;border-radius:13px;border:none;cursor:pointer;font-size:17px;font-weight:700;color:#fff;display:flex;align-items:center;justify-content:center;gap:8px;transition:.15s;-webkit-tap-highlight-color:transparent;}
+    .act-btn:active{transform:scale(.97);}
+    .btn-ti{background:var(--green);}
+    .btn-bo{background:var(--orange);}
+    .btn-bi{background:var(--blue);}
+    .btn-to{background:var(--red);}
+
+    /* ── Confirm screen ── */
+    .cfm{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:55vh;text-align:center;}
+    .cfm-icon{width:96px;height:96px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:46px;margin-bottom:18px;animation:pop .3s ease;}
+    @keyframes pop{0%{transform:scale(.4);opacity:0}70%{transform:scale(1.08)}100%{transform:scale(1);opacity:1}}
+    .cfm-title{font-size:26px;font-weight:700;margin-bottom:6px;}
+    .cfm-name{font-size:16px;color:var(--dim);margin-bottom:4px;}
+    .cfm-time{font-size:22px;font-weight:600;font-variant-numeric:tabular-nums;}
+    .cfm-note{margin-top:12px;padding:8px 14px;background:rgba(234,179,8,.12);border-radius:8px;color:var(--yellow);font-size:12px;display:none;}
+    .cfm-cd{margin-top:18px;font-size:13px;color:var(--dim);}
+
+    /* ── Footer ── */
+    .ftr{background:var(--surf);padding:9px 20px;display:flex;align-items:center;justify-content:space-between;border-top:1px solid rgba(255,255,255,.07);font-size:11px;color:var(--dim);flex-shrink:0;}
+    .ftr a{color:var(--dim);text-decoration:none;opacity:.7;}
+    .ftr a:hover{opacity:1;}
+    .sync-btn{color:var(--accent);cursor:pointer;font-weight:500;}
+    .sync-btn:hover{text-decoration:underline;}
+    .pbadge{display:inline-block;background:var(--orange);color:#fff;border-radius:10px;padding:1px 5px;font-size:10px;font-weight:700;margin-left:3px;}
+
+    /* ── Toast ── */
+    .toast{position:fixed;bottom:72px;left:50%;transform:translateX(-50%);background:var(--surf2);color:var(--text);padding:10px 18px;border-radius:10px;font-size:13px;font-weight:500;border:1px solid rgba(255,255,255,.1);z-index:999;opacity:0;transition:opacity .3s;pointer-events:none;white-space:nowrap;}
+    .toast.show{opacity:1;}
+
+    ::-webkit-scrollbar{width:3px;}
+    ::-webkit-scrollbar-thumb{background:rgba(255,255,255,.15);border-radius:2px;}
+  </style>
+</head>
+<body>
+
+<div class="hdr">
+  <div class="logo">JumpStart <span>Clock-In</span></div>
+  <div class="clock-wrap">
+    <div class="clock-time" id="cTime">--:--:--</div>
+    <div class="clock-date" id="cDate"></div>
+  </div>
+  <div class="net-wrap">
+    <span class="dot" id="dot"></span><span id="netTxt">Online</span><br>
+    <span id="pendTxt"></span>
+  </div>
+</div>
+
+<div class="banner" id="banner">
+  ⚡ Offline — events saved locally, will sync when connected
+</div>
+
+<div class="content">
+  <!-- Home: staff selection -->
+  <div class="screen active" id="scrHome">
+    <div class="sec-title">Tap your name</div>
+    <div class="staff-grid" id="staffGrid"></div>
+  </div>
+
+  <!-- Action: choose event type -->
+  <div class="screen" id="scrAction">
+    <div class="back-btn" onclick="showHome()">← Back</div>
+    <div class="profile">
+      <div class="avatar av-lg" id="actAv" style="background:linear-gradient(135deg,#0ea5e9,#6366f1)">A</div>
+      <div class="pname" id="actName"></div>
+      <div class="pstatus" id="actStat"></div>
+      <div class="plast" id="actLast"></div>
+    </div>
+    <div class="act-grid" id="actGrid"></div>
+  </div>
+
+  <!-- Confirm -->
+  <div class="screen" id="scrConfirm">
+    <div class="cfm">
+      <div class="cfm-icon" id="cfmIcon">✅</div>
+      <div class="cfm-title" id="cfmTitle"></div>
+      <div class="cfm-name" id="cfmName"></div>
+      <div class="cfm-time" id="cfmTime"></div>
+      <div class="cfm-note" id="cfmNote">📶 Saved offline — syncs automatically when connected</div>
+      <div class="cfm-cd" id="cfmCd"></div>
+    </div>
+  </div>
+</div>
+
+<div class="ftr">
+  <a href="admin.html">Admin ↗</a>
+  <span class="sync-btn" onclick="manualSync()">Sync now<span id="footPend"></span></span>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ── Config (editable via Admin page) ──────────────────────────
+const CFG_KEY = 'js_config';
+let CFG = {
+  supabaseUrl: '',
+  supabaseKey: '',
+  staff: [
+    { id:'s1', name:'Alice Santos' },
+    { id:'s2', name:'Bob Reyes' },
+    { id:'s3', name:'Carol Dela Cruz' },
+    { id:'s4', name:'Diana Tan' },
+    { id:'s5', name:'Eddie Lopez' },
+    { id:'s6', name:'Frank Bautista' },
+  ]
+};
+try { const s = localStorage.getItem(CFG_KEY); if (s) CFG = { ...CFG, ...JSON.parse(s) }; } catch(e){}
+
+// ── IndexedDB ─────────────────────────────────────────────────
+let IDB = null;
+
+function openDB() {
+  return new Promise((res, rej) => {
+    const r = indexedDB.open('jumpstart-clockin', 1);
+    r.onupgradeneeded = e => {
+      const db = e.target.result;
+      if (!db.objectStoreNames.contains('events')) {
+        const s = db.createObjectStore('events', { keyPath:'id', autoIncrement:true });
+        s.createIndex('synced', 'synced');
+        s.createIndex('date_key', 'date_key');
+        s.createIndex('staff_id', 'staff_id');
+      }
+    };
+    r.onsuccess = e => { IDB = e.target.result; res(); };
+    r.onerror = e => rej(e.target.error);
+  });
+}
+
+function tx(mode, fn) {
+  return new Promise((res, rej) => {
+    const t = IDB.transaction('events', mode);
+    const s = t.objectStore('events');
+    const r = fn(s);
+    r.onsuccess = e => res(e.target.result);
+    r.onerror = e => rej(e.target.error);
+  });
+}
+
+function dbAdd(ev) { return tx('readwrite', s => s.add(ev)); }
+
+function dbGetPending() {
+  return new Promise((res, rej) => {
+    const t = IDB.transaction('events','readonly');
+    const idx = t.objectStore('events').index('synced');
+    const r = idx.getAll(0);
+    r.onsuccess = e => res(e.target.result);
+    r.onerror = e => rej(e.target.error);
+  });
+}
+
+function dbMarkSynced(id) {
+  return new Promise((res, rej) => {
+    const t = IDB.transaction('events','readwrite');
+    const s = t.objectStore('events');
+    const r = s.get(id);
+    r.onsuccess = e => {
+      const ev = e.target.result;
+      if (!ev) return res();
+      ev.synced = 1;
+      ev.synced_at = new Date().toISOString();
+      const p = s.put(ev);
+      p.onsuccess = () => res();
+      p.onerror = e2 => rej(e2.target.error);
+    };
+    r.onerror = e => rej(e.target.error);
+  });
+}
+
+function dbTodayByStaff() {
+  const today = todayKey();
+  return new Promise((res, rej) => {
+    const t = IDB.transaction('events','readonly');
+    const idx = t.objectStore('events').index('date_key');
+    const r = idx.getAll(today);
+    r.onsuccess = e => {
+      const map = {};
+      (e.target.result || [])
+        .sort((a,b) => a.timestamp > b.timestamp ? 1 : -1)
+        .forEach(ev => {
+          if (!map[ev.staff_id]) map[ev.staff_id] = [];
+          map[ev.staff_id].push(ev);
+        });
+      res(map);
+    };
+    r.onerror = e => rej(e.target.error);
+  });
+}
+
+// ── Status helpers ────────────────────────────────────────────
+const STATUS_FROM_EVENT = { time_in:'working', break_out:'on_break', break_in:'working', time_out:'out' };
+const STATUS_TEXT = { none:'Not clocked in today', working:'Currently working', on_break:'Currently on break', out:'Done for today' };
+const BADGE = { none:['Not In','b-none'], working:['Working','b-in'], on_break:['On Break','b-brk'], out:['Done','b-out'] };
+const EVT = {
+  time_in:   { label:'Time In',   icon:'🟢', cls:'btn-ti', cfmLabel:'Time In Recorded!',   cfmIcon:'✅', cfmBg:'rgba(34,197,94,.18)'  },
+  break_out: { label:'Break Out', icon:'☕', cls:'btn-bo', cfmLabel:'Break Out Recorded!', cfmIcon:'☕', cfmBg:'rgba(249,115,22,.18)' },
+  break_in:  { label:'Break In',  icon:'🔵', cls:'btn-bi', cfmLabel:'Break In Recorded!',  cfmIcon:'✅', cfmBg:'rgba(59,130,246,.18)' },
+  time_out:  { label:'Time Out',  icon:'🔴', cls:'btn-to', cfmLabel:'Time Out Recorded!',  cfmIcon:'👋', cfmBg:'rgba(239,68,68,.18)'  },
+};
+
+function statusOf(last) { return last ? (STATUS_FROM_EVENT[last.event_type] || 'none') : 'none'; }
+function actionsFor(status) {
+  if (status === 'working') return ['break_out','time_out'];
+  if (status === 'on_break') return ['break_in'];
+  return ['time_in'];
+}
+function todayKey() { return new Date().toISOString().split('T')[0]; }
+function fmtTime(d) { return d.toLocaleTimeString('en-PH',{hour:'2-digit',minute:'2-digit',second:'2-digit'}); }
+function initials(name) { return name.split(' ').map(n=>n[0]).join('').slice(0,2).toUpperCase(); }
+function esc(s) { const d=document.createElement('div');d.textContent=s;return d.innerHTML; }
+
+// Deterministic avatar color per staff name
+function avatarColor(name) {
+  const palette = ['#0ea5e9,#6366f1','#10b981,#3b82f6','#f59e0b,#ef4444','#8b5cf6,#ec4899','#14b8a6,#6366f1','#f97316,#3b82f6'];
+  let h = 0;
+  for (let i=0;i<name.length;i++) h = (h * 31 + name.charCodeAt(i)) & 0xffffff;
+  return palette[Math.abs(h) % palette.length];
+}
+
+// ── State ─────────────────────────────────────────────────────
+let statuses = {}, lastEvents = {}, selectedStaff = null, cdTimer = null, syncing = false;
+
+// ── Screens ───────────────────────────────────────────────────
+function setScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+async function showHome() {
+  if (cdTimer) { clearInterval(cdTimer); cdTimer = null; }
+  setScreen('scrHome');
+  await refreshStatuses();
+}
+
+async function refreshStatuses() {
+  if (!IDB) return;
+  const byStaff = await dbTodayByStaff();
+  CFG.staff.forEach(s => {
+    const evs = byStaff[s.id] || [];
+    const last = evs[evs.length - 1] || null;
+    statuses[s.id] = statusOf(last);
+    lastEvents[s.id] = last;
+  });
+  renderGrid();
+  await updatePending();
+}
+
+function renderGrid() {
+  document.getElementById('staffGrid').innerHTML = CFG.staff.map(s => {
+    const st = statuses[s.id] || 'none';
+    const [btxt, bcls] = BADGE[st];
+    const col = avatarColor(s.name);
+    return `<div class="s-card" onclick="selectStaff('${esc(s.id)}')">
+      <div class="avatar" style="background:linear-gradient(135deg,${col})">${initials(s.name)}</div>
+      <div class="s-name">${esc(s.name)}</div>
+      <span class="sbadge ${bcls}">${btxt}</span>
+    </div>`;
+  }).join('');
+}
+
+function selectStaff(id) {
+  selectedStaff = CFG.staff.find(s => s.id === id);
+  if (!selectedStaff) return;
+  const st = statuses[id] || 'none';
+  const last = lastEvents[id];
+  const col = avatarColor(selectedStaff.name);
+
+  document.getElementById('actAv').textContent = initials(selectedStaff.name);
+  document.getElementById('actAv').style.background = `linear-gradient(135deg,${col})`;
+  document.getElementById('actName').textContent = selectedStaff.name;
+  document.getElementById('actStat').textContent = STATUS_TEXT[st];
+  document.getElementById('actLast').textContent = last
+    ? `Last: ${EVT[last.event_type].label} at ${fmtTime(new Date(last.timestamp))}`
+    : '';
+
+  document.getElementById('actGrid').innerHTML = actionsFor(st).map(a =>
+    `<button class="act-btn ${EVT[a].cls}" onclick="recordEvent('${a}')">${EVT[a].icon} ${EVT[a].label}</button>`
+  ).join('');
+
+  setScreen('scrAction');
+}
+
+async function recordEvent(type) {
+  if (!selectedStaff) return;
+  const now = new Date();
+  const ev = {
+    staff_id: selectedStaff.id,
+    staff_name: selectedStaff.name,
+    event_type: type,
+    timestamp: now.toISOString(),
+    date_key: todayKey(),
+    synced: 0,
+    created_at: now.toISOString(),
+  };
+  const id = await dbAdd(ev);
+  ev.id = id;
+
+  statuses[selectedStaff.id] = statusOf(ev);
+  lastEvents[selectedStaff.id] = ev;
+
+  showConfirm(type, selectedStaff.name, now);
+  if (navigator.onLine) syncEvents();
+}
+
+function showConfirm(type, name, time) {
+  const cfg = EVT[type];
+  document.getElementById('cfmIcon').textContent = cfg.cfmIcon;
+  document.getElementById('cfmIcon').style.background = cfg.cfmBg;
+  document.getElementById('cfmTitle').textContent = cfg.cfmLabel;
+  document.getElementById('cfmName').textContent = name;
+  document.getElementById('cfmTime').textContent = fmtTime(time);
+  document.getElementById('cfmNote').style.display = navigator.onLine ? 'none' : 'block';
+  setScreen('scrConfirm');
+
+  let sec = 3;
+  const el = document.getElementById('cfmCd');
+  el.textContent = `Returning in ${sec}s…`;
+  if (cdTimer) clearInterval(cdTimer);
+  cdTimer = setInterval(() => {
+    sec--;
+    if (sec <= 0) { clearInterval(cdTimer); cdTimer = null; showHome(); }
+    else el.textContent = `Returning in ${sec}s…`;
+  }, 1000);
+}
+
+// ── Sync ──────────────────────────────────────────────────────
+async function syncEvents() {
+  if (syncing || !navigator.onLine || !CFG.supabaseUrl || !CFG.supabaseKey) return;
+  const pending = await dbGetPending();
+  if (!pending.length) return;
+
+  syncing = true;
+  setDot('sync');
+
+  let ok = 0;
+  for (const ev of pending) {
+    try {
+      const r = await fetch(`${CFG.supabaseUrl}/rest/v1/clock_events`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'apikey': CFG.supabaseKey,
+          'Authorization': `Bearer ${CFG.supabaseKey}`,
+          'Prefer': 'return=minimal'
+        },
+        body: JSON.stringify({
+          staff_id: ev.staff_id,
+          staff_name: ev.staff_name,
+          event_type: ev.event_type,
+          event_timestamp: ev.timestamp,
+          date_key: ev.date_key,
+        })
+      });
+      if (r.ok) { await dbMarkSynced(ev.id); ok++; }
+    } catch(_) {}
+  }
+
+  syncing = false;
+  setDot(navigator.onLine ? 'online' : 'offline');
+  await updatePending();
+  if (ok) toast(`✓ Synced ${ok} event${ok>1?'s':''}`);
+}
+
+async function manualSync() {
+  if (!navigator.onLine) { toast('⚠️ No internet connection'); return; }
+  if (!CFG.supabaseUrl) { toast('⚠️ Supabase not set up — see Admin page'); return; }
+  await syncEvents();
+}
+
+async function updatePending() {
+  const p = await dbGetPending();
+  const n = p.length;
+  document.getElementById('footPend').innerHTML = n ? `<span class="pbadge">${n}</span>` : '';
+  document.getElementById('pendTxt').textContent = n ? `${n} pending` : '';
+}
+
+// ── Network UI ────────────────────────────────────────────────
+function setDot(state) {
+  const dot = document.getElementById('dot');
+  const txt = document.getElementById('netTxt');
+  const ban = document.getElementById('banner');
+  dot.className = 'dot' + (state==='offline'?' off':state==='sync'?' sync':'');
+  txt.textContent = state==='syncing'?'Syncing…':state==='offline'?'Offline':'Online';
+  ban.classList.toggle('show', state === 'offline');
+}
+
+window.addEventListener('online',  () => { setDot('online');  toast('✓ Back online — syncing…'); syncEvents(); });
+window.addEventListener('offline', () => { setDot('offline'); });
+
+// ── Clock ─────────────────────────────────────────────────────
+function tickClock() {
+  const now = new Date();
+  document.getElementById('cTime').textContent = fmtTime(now);
+  document.getElementById('cDate').textContent = now.toLocaleDateString('en-PH',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+}
+
+// ── Toast ─────────────────────────────────────────────────────
+let toastTmr;
+function toast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg; el.classList.add('show');
+  if (toastTmr) clearTimeout(toastTmr);
+  toastTmr = setTimeout(() => el.classList.remove('show'), 2600);
+}
+
+// ── Service Worker ────────────────────────────────────────────
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('./sw.js').catch(() => {});
+  navigator.serviceWorker.addEventListener('message', e => {
+    if (e.data?.type === 'SYNC_NOW') syncEvents();
+  });
+}
+
+// ── Init ──────────────────────────────────────────────────────
+(async () => {
+  tickClock();
+  setInterval(tickClock, 1000);
+  setDot(navigator.onLine ? 'online' : 'offline');
+  await openDB();
+  await showHome();
+  if (navigator.onLine) setTimeout(syncEvents, 1500);
+})();
+</script>
+</body>
+</html>

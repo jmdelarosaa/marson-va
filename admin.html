@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JumpStart Admin</title>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0;}
+    :root{
+      --bg:#f0f4f8;--white:#fff;--navy:#0d1b2a;--surf:#1a2d42;
+      --accent:#0ea5e9;--text:#1e293b;--dim:#64748b;--bdr:#e2e8f0;
+      --green:#16a34a;--orange:#ea580c;--blue:#2563eb;--red:#dc2626;--yellow:#ca8a04;
+    }
+    body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;min-height:100vh;}
+
+    /* ── Header ── */
+    .hdr{background:var(--navy);color:#fff;padding:14px 24px;display:flex;align-items:center;justify-content:space-between;gap:16px;}
+    .hdr h1{font-size:18px;font-weight:700;color:#38bdf8;}
+    .hdr h1 span{color:#fff;font-weight:400;}
+    .hdr-right{font-size:12px;color:#94a3b8;text-align:right;}
+    .back-link{color:#94a3b8;text-decoration:none;font-size:13px;opacity:.8;}
+    .back-link:hover{opacity:1;color:#38bdf8;}
+
+    /* ── Main layout ── */
+    .main{max-width:1100px;margin:0 auto;padding:20px;}
+
+    /* ── Stats bar ── */
+    .stats{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px;margin-bottom:22px;}
+    .stat-card{background:var(--white);border-radius:10px;padding:14px 16px;border:1px solid var(--bdr);}
+    .stat-val{font-size:28px;font-weight:700;line-height:1;}
+    .stat-lbl{font-size:12px;color:var(--dim);margin-top:4px;}
+    .val-green{color:var(--green);}
+    .val-orange{color:var(--orange);}
+    .val-blue{color:var(--blue);}
+    .val-dim{color:var(--dim);}
+
+    /* ── Tabs ── */
+    .tabs{display:flex;gap:4px;margin-bottom:16px;background:var(--white);border-radius:10px;padding:4px;border:1px solid var(--bdr);width:fit-content;}
+    .tab{padding:7px 18px;border-radius:7px;border:none;background:none;cursor:pointer;font-size:13px;font-weight:500;color:var(--dim);}
+    .tab.active{background:var(--navy);color:#fff;}
+
+    /* ── Panel ── */
+    .panel{display:none;}
+    .panel.active{display:block;}
+
+    /* ── Card wrapper ── */
+    .card{background:var(--white);border-radius:10px;border:1px solid var(--bdr);overflow:hidden;}
+    .card-hdr{padding:14px 18px;border-bottom:1px solid var(--bdr);display:flex;align-items:center;justify-content:space-between;}
+    .card-hdr h2{font-size:14px;font-weight:600;}
+
+    /* ── Table ── */
+    .tbl-wrap{overflow-x:auto;}
+    table{width:100%;border-collapse:collapse;}
+    th{background:#f8fafc;font-size:11px;font-weight:600;color:var(--dim);text-transform:uppercase;letter-spacing:.5px;padding:9px 14px;text-align:left;border-bottom:1px solid var(--bdr);}
+    td{padding:10px 14px;font-size:13px;border-bottom:1px solid #f1f5f9;vertical-align:middle;}
+    tr:last-child td{border-bottom:none;}
+    tr:hover td{background:#f8fafc;}
+
+    /* ── Badges ── */
+    .badge{display:inline-block;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:600;}
+    .b-ti{background:#dcfce7;color:var(--green);}
+    .b-bo{background:#ffedd5;color:var(--orange);}
+    .b-bi{background:#dbeafe;color:var(--blue);}
+    .b-to{background:#fee2e2;color:var(--red);}
+    .b-synced{background:#f0fdf4;color:var(--green);}
+    .b-pend{background:#fff7ed;color:var(--orange);}
+
+    /* ── Staff status grid ── */
+    .staff-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;padding:16px;}
+    .staff-card{border:1px solid var(--bdr);border-radius:10px;padding:14px;display:flex;align-items:center;gap:12px;}
+    .av{width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff;font-size:16px;flex-shrink:0;}
+    .sc-info .sc-name{font-size:14px;font-weight:600;}
+    .sc-info .sc-status{font-size:12px;color:var(--dim);margin-top:2px;}
+    .sc-info .sc-last{font-size:11px;color:var(--dim);margin-top:2px;}
+
+    /* ── Settings ── */
+    .settings{padding:20px;}
+    .s-section{margin-bottom:28px;}
+    .s-section h3{font-size:13px;font-weight:700;color:var(--dim);text-transform:uppercase;letter-spacing:.5px;margin-bottom:14px;padding-bottom:8px;border-bottom:1px solid var(--bdr);}
+    label{display:block;font-size:13px;font-weight:500;margin-bottom:5px;color:var(--text);}
+    input[type=text],input[type=password],input[type=url]{width:100%;padding:9px 12px;border:1px solid var(--bdr);border-radius:8px;font-size:13px;color:var(--text);background:var(--white);margin-bottom:12px;}
+    input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 2px rgba(14,165,233,.15);}
+    .btn{padding:9px 18px;border-radius:8px;border:none;cursor:pointer;font-size:13px;font-weight:600;}
+    .btn-primary{background:var(--accent);color:#fff;}
+    .btn-primary:hover{background:#0284c7;}
+    .btn-danger{background:#fee2e2;color:var(--red);}
+    .btn-danger:hover{background:#fecaca;}
+    .btn-sm{padding:6px 12px;font-size:12px;}
+    .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;}
+    .msg{font-size:12px;color:var(--dim);margin-top:6px;}
+    .msg.ok{color:var(--green);}
+    .msg.err{color:var(--red);}
+
+    /* ── Staff list management ── */
+    .staff-list-items{display:flex;flex-direction:column;gap:6px;margin-bottom:12px;max-height:260px;overflow-y:auto;}
+    .staff-item{display:flex;align-items:center;justify-content:space-between;padding:8px 12px;background:#f8fafc;border-radius:7px;font-size:13px;}
+    .staff-item .remove-btn{color:var(--red);cursor:pointer;font-size:18px;line-height:1;opacity:.6;}
+    .staff-item .remove-btn:hover{opacity:1;}
+    .add-row{display:flex;gap:8px;}
+    .add-row input{flex:1;margin:0;}
+
+    /* ── SQL block ── */
+    .sql-block{background:#0d1b2a;color:#a5f3fc;padding:14px;border-radius:8px;font-family:monospace;font-size:12px;line-height:1.6;overflow-x:auto;white-space:pre;}
+    .copy-btn{margin-top:8px;}
+
+    /* ── Sync status ── */
+    .sync-bar{display:flex;align-items:center;gap:10px;font-size:13px;}
+    .dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--green);}
+    .dot.off{background:var(--red);}
+
+    /* ── Export btn ── */
+    .export-btn{padding:8px 14px;border-radius:8px;border:1px solid var(--bdr);background:var(--white);cursor:pointer;font-size:13px;font-weight:500;color:var(--text);}
+    .export-btn:hover{background:#f8fafc;}
+
+    /* ── Empty state ── */
+    .empty{text-align:center;padding:40px 20px;color:var(--dim);}
+    .empty span{font-size:36px;display:block;margin-bottom:10px;}
+
+    /* ── Setup notice ── */
+    .setup-notice{background:#fffbeb;border:1px solid #fde68a;border-radius:10px;padding:16px;margin-bottom:20px;font-size:13px;}
+    .setup-notice strong{color:#92400e;}
+
+    @media(max-width:600px){
+      .stats{grid-template-columns:repeat(2,1fr);}
+      .main{padding:12px;}
+    }
+  </style>
+</head>
+<body>
+
+<div class="hdr">
+  <h1>JumpStart <span>Admin</span></h1>
+  <div class="hdr-right">
+    <div id="todayLabel"></div>
+    <div style="margin-top:3px">
+      <span class="dot" id="dot"></span> <span id="netTxt">Online</span>
+    </div>
+  </div>
+  <a href="clockin.html" class="back-link">← Back to Kiosk</a>
+</div>
+
+<div class="main">
+  <!-- Setup notice shown when Supabase not yet configured -->
+  <div class="setup-notice" id="setupNotice" style="display:none">
+    <strong>⚙️ Supabase not configured yet.</strong>
+    Data shown below is from <em>this device only</em>.
+    Go to <strong>Settings</strong> tab to connect Supabase and enable cross-device sync.
+  </div>
+
+  <!-- Stats -->
+  <div class="stats">
+    <div class="stat-card"><div class="stat-val" id="sTot">0</div><div class="stat-lbl">Total Staff</div></div>
+    <div class="stat-card"><div class="stat-val val-green" id="sWork">0</div><div class="stat-lbl">Working</div></div>
+    <div class="stat-card"><div class="stat-val val-orange" id="sBrk">0</div><div class="stat-lbl">On Break</div></div>
+    <div class="stat-card"><div class="stat-val val-dim" id="sDone">0</div><div class="stat-lbl">Done</div></div>
+    <div class="stat-card"><div class="stat-val val-dim" id="sNone">0</div><div class="stat-lbl">Not In</div></div>
+    <div class="stat-card"><div class="stat-val val-orange" id="sPend">0</div><div class="stat-lbl">Pending Sync</div></div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('log',this)">Today's Log</button>
+    <button class="tab" onclick="switchTab('status',this)">Staff Status</button>
+    <button class="tab" onclick="switchTab('settings',this)">Settings</button>
+  </div>
+
+  <!-- Panel: Today's Log -->
+  <div class="panel active" id="panLog">
+    <div class="card">
+      <div class="card-hdr">
+        <h2>Clock Events — <span id="logDate"></span></h2>
+        <button class="export-btn" onclick="exportCSV()">⬇ Export CSV</button>
+      </div>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Time</th><th>Staff</th><th>Action</th><th>Sync</th></tr></thead>
+          <tbody id="logBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Panel: Staff Status -->
+  <div class="panel" id="panStatus">
+    <div class="card">
+      <div class="card-hdr"><h2>Staff Status — Today</h2></div>
+      <div class="staff-grid" id="statusGrid"></div>
+    </div>
+  </div>
+
+  <!-- Panel: Settings -->
+  <div class="panel" id="panSettings">
+    <div class="card">
+      <div class="settings">
+
+        <!-- Supabase config -->
+        <div class="s-section">
+          <h3>Supabase Connection</h3>
+          <label for="sbUrl">Project URL</label>
+          <input type="url" id="sbUrl" placeholder="https://xxxx.supabase.co">
+          <label for="sbKey">Anon / Service Role Key</label>
+          <input type="password" id="sbKey" placeholder="eyJhbG…">
+          <div class="row">
+            <button class="btn btn-primary" onclick="saveSupabase()">Save & Connect</button>
+            <button class="btn btn-sm" onclick="testSupabase()">Test Connection</button>
+            <span class="msg" id="sbMsg"></span>
+          </div>
+
+          <details style="margin-top:16px">
+            <summary style="cursor:pointer;font-size:13px;font-weight:600;color:var(--accent)">
+              📋 Supabase table setup SQL
+            </summary>
+            <div style="margin-top:10px">
+              <div class="sql-block" id="sqlBlock">-- Run this in your Supabase SQL editor:
+
+create table clock_events (
+  id            bigint generated always as identity primary key,
+  staff_id      text        not null,
+  staff_name    text        not null,
+  event_type    text        not null,  -- time_in | break_out | break_in | time_out
+  event_timestamp timestamptz not null,
+  date_key      date        not null,
+  created_at    timestamptz default now()
+);
+
+alter table clock_events enable row level security;
+
+create policy "kiosk_insert" on clock_events
+  for insert to anon with check (true);
+
+create policy "kiosk_select" on clock_events
+  for select to anon using (true);</div>
+              <button class="btn btn-sm copy-btn" onclick="copySQL()">Copy SQL</button>
+            </div>
+          </details>
+        </div>
+
+        <!-- Staff list -->
+        <div class="s-section">
+          <h3>Staff List</h3>
+          <div class="staff-list-items" id="staffListItems"></div>
+          <div class="add-row">
+            <input type="text" id="newStaffName" placeholder="Add staff name…" onkeydown="if(event.key==='Enter')addStaff()">
+            <button class="btn btn-primary btn-sm" onclick="addStaff()">Add</button>
+          </div>
+          <div class="msg" id="staffMsg"></div>
+        </div>
+
+        <!-- Danger zone -->
+        <div class="s-section">
+          <h3>Danger Zone</h3>
+          <p style="font-size:13px;color:var(--dim);margin-bottom:12px">Clear all locally stored clock events (does not delete data from Supabase).</p>
+          <button class="btn btn-danger" onclick="clearLocalData()">Clear Local Data</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── Config ────────────────────────────────────────────────────
+const CFG_KEY = 'js_config';
+let CFG = {
+  supabaseUrl: '', supabaseKey: '',
+  staff: [
+    { id:'s1', name:'Alice Santos' },
+    { id:'s2', name:'Bob Reyes' },
+    { id:'s3', name:'Carol Dela Cruz' },
+    { id:'s4', name:'Diana Tan' },
+    { id:'s5', name:'Eddie Lopez' },
+    { id:'s6', name:'Frank Bautista' },
+  ]
+};
+try { const s = localStorage.getItem(CFG_KEY); if (s) CFG = { ...CFG, ...JSON.parse(s) }; } catch(e){}
+
+function saveCFG() { localStorage.setItem(CFG_KEY, JSON.stringify(CFG)); }
+
+// ── IndexedDB (same schema as clockin.html) ────────────────────
+let IDB = null;
+function openDB() {
+  return new Promise((res, rej) => {
+    const r = indexedDB.open('jumpstart-clockin', 1);
+    r.onupgradeneeded = e => {
+      const db = e.target.result;
+      if (!db.objectStoreNames.contains('events')) {
+        const s = db.createObjectStore('events', { keyPath:'id', autoIncrement:true });
+        s.createIndex('synced','synced');
+        s.createIndex('date_key','date_key');
+        s.createIndex('staff_id','staff_id');
+      }
+    };
+    r.onsuccess = e => { IDB = e.target.result; res(); };
+    r.onerror = e => rej(e.target.error);
+  });
+}
+
+function dbGetByDate(dateKey) {
+  return new Promise((res, rej) => {
+    const idx = IDB.transaction('events','readonly').objectStore('events').index('date_key');
+    const r = idx.getAll(dateKey);
+    r.onsuccess = e => res(e.target.result || []);
+    r.onerror = e => rej(e.target.error);
+  });
+}
+
+function dbGetPending() {
+  return new Promise((res, rej) => {
+    const idx = IDB.transaction('events','readonly').objectStore('events').index('synced');
+    const r = idx.getAll(0);
+    r.onsuccess = e => res(e.target.result || []);
+    r.onerror = e => rej(e.target.error);
+  });
+}
+
+function dbClearAll() {
+  return new Promise((res, rej) => {
+    const t = IDB.transaction('events','readwrite');
+    const r = t.objectStore('events').clear();
+    r.onsuccess = () => res();
+    r.onerror = e => rej(e.target.error);
+  });
+}
+
+// ── Helpers ───────────────────────────────────────────────────
+function todayKey() { return new Date().toISOString().split('T')[0]; }
+function fmtTime(iso) {
+  return new Date(iso).toLocaleTimeString('en-PH',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+}
+function initials(n) { return n.split(' ').map(p=>p[0]).join('').slice(0,2).toUpperCase(); }
+function esc(s) { const d=document.createElement('div');d.textContent=s;return d.innerHTML; }
+function randId() { return 's' + Math.random().toString(36).slice(2,8); }
+
+function avatarColor(name) {
+  const p=['#0ea5e9,#6366f1','#10b981,#3b82f6','#f59e0b,#ef4444','#8b5cf6,#ec4899','#14b8a6,#6366f1','#f97316,#3b82f6'];
+  let h=0; for(let i=0;i<name.length;i++) h=(h*31+name.charCodeAt(i))&0xffffff;
+  return p[Math.abs(h)%p.length];
+}
+
+const EVT_LABEL = { time_in:'Time In', break_out:'Break Out', break_in:'Break In', time_out:'Time Out' };
+const EVT_BADGE = { time_in:'b-ti', break_out:'b-bo', break_in:'b-bi', time_out:'b-to' };
+const STATUS_FROM_EVENT = { time_in:'working', break_out:'on_break', break_in:'working', time_out:'out' };
+const STATUS_TEXT = { none:'Not clocked in', working:'Working', on_break:'On Break', out:'Done for today' };
+const BADGE_CLS = { none:'b-to', working:'b-ti', on_break:'b-bo', out:'b-to' };
+
+// ── Data loading ──────────────────────────────────────────────
+let todayEvents = [];
+let supabaseEvents = [];
+
+async function loadData() {
+  const today = todayKey();
+  document.getElementById('logDate').textContent = today;
+  document.getElementById('todayLabel').textContent = today;
+
+  // Local data
+  todayEvents = await dbGetByDate(today);
+  todayEvents.sort((a,b) => b.timestamp > a.timestamp ? 1 : -1);
+
+  // Supabase data (if configured)
+  supabaseEvents = [];
+  if (CFG.supabaseUrl && CFG.supabaseKey) {
+    try {
+      const r = await fetch(
+        `${CFG.supabaseUrl}/rest/v1/clock_events?date_key=eq.${today}&order=event_timestamp.desc&limit=500`,
+        { headers: { 'apikey': CFG.supabaseKey, 'Authorization': `Bearer ${CFG.supabaseKey}` } }
+      );
+      if (r.ok) supabaseEvents = await r.json();
+    } catch(_) {}
+  }
+
+  // Merge: supabase takes precedence for display; show local pending separately
+  const pending = await dbGetPending();
+  renderStats(pending.length);
+  renderLog(pending);
+  renderStatusGrid();
+}
+
+// ── Stats ─────────────────────────────────────────────────────
+function renderStats(pendingCount) {
+  const statusMap = {};
+  CFG.staff.forEach(s => { statusMap[s.id] = 'none'; });
+
+  // Compute status from local data
+  const byStaff = {};
+  [...todayEvents].reverse().forEach(ev => {
+    if (!byStaff[ev.staff_id]) byStaff[ev.staff_id] = [];
+    byStaff[ev.staff_id].push(ev);
+  });
+
+  CFG.staff.forEach(s => {
+    const evs = byStaff[s.id] || [];
+    if (evs.length) statusMap[s.id] = STATUS_FROM_EVENT[evs[evs.length-1].event_type] || 'none';
+  });
+
+  const counts = { none:0, working:0, on_break:0, out:0 };
+  Object.values(statusMap).forEach(st => counts[st]++);
+
+  document.getElementById('sTot').textContent = CFG.staff.length;
+  document.getElementById('sWork').textContent = counts.working;
+  document.getElementById('sBrk').textContent = counts.on_break;
+  document.getElementById('sDone').textContent = counts.out;
+  document.getElementById('sNone').textContent = counts.none;
+  document.getElementById('sPend').textContent = pendingCount;
+}
+
+// ── Log table ─────────────────────────────────────────────────
+function renderLog(pending) {
+  const pendingIds = new Set(pending.map(p => p.id));
+  const body = document.getElementById('logBody');
+
+  // Use Supabase data if available, else local
+  const source = supabaseEvents.length > 0 ? supabaseEvents : todayEvents;
+
+  if (!source.length) {
+    body.innerHTML = `<tr><td colspan="4"><div class="empty"><span>📋</span>No events today yet</div></td></tr>`;
+    return;
+  }
+
+  body.innerHTML = source.map(ev => {
+    const ts = ev.event_timestamp || ev.timestamp;
+    const synced = ev.id && !pendingIds.has(ev.id) ? 'b-synced' : 'b-pend';
+    const syncLabel = synced === 'b-synced' ? 'Synced' : 'Pending';
+    return `<tr>
+      <td>${fmtTime(ts)}</td>
+      <td>${esc(ev.staff_name)}</td>
+      <td><span class="badge ${EVT_BADGE[ev.event_type]||''}">${esc(EVT_LABEL[ev.event_type]||ev.event_type)}</span></td>
+      <td><span class="badge ${synced}">${syncLabel}</span></td>
+    </tr>`;
+  }).join('');
+}
+
+// ── Staff status grid ─────────────────────────────────────────
+function renderStatusGrid() {
+  const byStaff = {};
+  [...todayEvents].forEach(ev => {
+    if (!byStaff[ev.staff_id]) byStaff[ev.staff_id] = [];
+    byStaff[ev.staff_id].push(ev);
+  });
+
+  document.getElementById('statusGrid').innerHTML = CFG.staff.map(s => {
+    const evs = (byStaff[s.id] || []).sort((a,b) => a.timestamp > b.timestamp ? 1 : -1);
+    const last = evs[evs.length-1] || null;
+    const st = last ? (STATUS_FROM_EVENT[last.event_type] || 'none') : 'none';
+    const col = avatarColor(s.name);
+    const lastTxt = last ? `${EVT_LABEL[last.event_type]} at ${fmtTime(last.timestamp)}` : 'No events today';
+    return `<div class="staff-card">
+      <div class="av" style="background:linear-gradient(135deg,${col})">${initials(s.name)}</div>
+      <div class="sc-info">
+        <div class="sc-name">${esc(s.name)}</div>
+        <div class="sc-status">${STATUS_TEXT[st]}</div>
+        <div class="sc-last">${esc(lastTxt)}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ── Tabs ──────────────────────────────────────────────────────
+function switchTab(id, btn) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('pan' + id.charAt(0).toUpperCase() + id.slice(1)).classList.add('active');
+  btn.classList.add('active');
+}
+
+// ── Settings ──────────────────────────────────────────────────
+function loadSettingsUI() {
+  document.getElementById('sbUrl').value = CFG.supabaseUrl || '';
+  document.getElementById('sbKey').value = CFG.supabaseKey || '';
+  renderStaffList();
+}
+
+function saveSupabase() {
+  CFG.supabaseUrl = document.getElementById('sbUrl').value.trim().replace(/\/$/, '');
+  CFG.supabaseKey = document.getElementById('sbKey').value.trim();
+  saveCFG();
+  document.getElementById('sbMsg').textContent = '✓ Saved';
+  document.getElementById('sbMsg').className = 'msg ok';
+  document.getElementById('setupNotice').style.display = !CFG.supabaseUrl ? 'block' : 'none';
+  setTimeout(() => { document.getElementById('sbMsg').textContent = ''; }, 2000);
+  loadData();
+}
+
+async function testSupabase() {
+  const url = document.getElementById('sbUrl').value.trim().replace(/\/$/, '');
+  const key = document.getElementById('sbKey').value.trim();
+  const msg = document.getElementById('sbMsg');
+  if (!url || !key) { msg.textContent = '⚠️ Fill in URL and Key first'; msg.className='msg err'; return; }
+  msg.textContent = 'Testing…'; msg.className = 'msg';
+  try {
+    const r = await fetch(`${url}/rest/v1/clock_events?limit=1`, {
+      headers: { 'apikey': key, 'Authorization': `Bearer ${key}` }
+    });
+    if (r.ok) { msg.textContent = '✓ Connected!'; msg.className = 'msg ok'; }
+    else { msg.textContent = `✗ Error ${r.status}: ${await r.text()}`; msg.className = 'msg err'; }
+  } catch(e) {
+    msg.textContent = '✗ Could not reach Supabase — check URL'; msg.className = 'msg err';
+  }
+}
+
+function renderStaffList() {
+  document.getElementById('staffListItems').innerHTML = CFG.staff.map(s =>
+    `<div class="staff-item">
+      <span>${esc(s.name)}</span>
+      <span class="remove-btn" onclick="removeStaff('${esc(s.id)}')" title="Remove">×</span>
+    </div>`
+  ).join('');
+}
+
+function addStaff() {
+  const input = document.getElementById('newStaffName');
+  const name = input.value.trim();
+  if (!name) return;
+  if (CFG.staff.some(s => s.name.toLowerCase() === name.toLowerCase())) {
+    document.getElementById('staffMsg').textContent = '⚠️ Name already exists';
+    return;
+  }
+  CFG.staff.push({ id: randId(), name });
+  saveCFG();
+  input.value = '';
+  document.getElementById('staffMsg').textContent = '';
+  renderStaffList();
+}
+
+function removeStaff(id) {
+  if (!confirm('Remove this staff member from the kiosk list?')) return;
+  CFG.staff = CFG.staff.filter(s => s.id !== id);
+  saveCFG();
+  renderStaffList();
+}
+
+function clearLocalData() {
+  if (!confirm('Clear ALL local clock event data from this device? This cannot be undone.\n\nData already synced to Supabase is safe.')) return;
+  dbClearAll().then(() => { alert('Local data cleared.'); loadData(); });
+}
+
+function copySQL() {
+  navigator.clipboard.writeText(document.getElementById('sqlBlock').textContent)
+    .then(() => alert('SQL copied to clipboard!'))
+    .catch(() => alert('Select the text and copy manually.'));
+}
+
+// ── Export CSV ────────────────────────────────────────────────
+function exportCSV() {
+  const source = supabaseEvents.length > 0 ? supabaseEvents : todayEvents;
+  if (!source.length) { alert('No data to export today.'); return; }
+
+  const rows = [['Time','Staff ID','Staff Name','Event','Date']];
+  source.forEach(ev => {
+    const ts = ev.event_timestamp || ev.timestamp;
+    rows.push([fmtTime(ts), ev.staff_id, ev.staff_name, ev.event_type, ev.date_key || todayKey()]);
+  });
+
+  const csv = rows.map(r => r.map(c => `"${String(c).replace(/"/g,'""')}"`).join(',')).join('\n');
+  const a = document.createElement('a');
+  a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
+  a.download = `clockin-${todayKey()}.csv`;
+  a.click();
+}
+
+// ── Network indicator ─────────────────────────────────────────
+function setDot(online) {
+  document.getElementById('dot').className = 'dot' + (online ? '' : ' off');
+  document.getElementById('netTxt').textContent = online ? 'Online' : 'Offline';
+}
+window.addEventListener('online', () => { setDot(true); loadData(); });
+window.addEventListener('offline', () => setDot(false));
+
+// ── Init ──────────────────────────────────────────────────────
+(async () => {
+  setDot(navigator.onLine);
+  document.getElementById('setupNotice').style.display = !CFG.supabaseUrl ? 'block' : 'none';
+  await openDB();
+  loadSettingsUI();
+  await loadData();
+  setInterval(loadData, 30000); // refresh every 30s
+})();
+</script>
+</body>
+</html>
