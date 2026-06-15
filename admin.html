@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JumpStart Admin</title>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0;}
+    :root{
+      --bg:#f0f4f8;--white:#fff;--navy:#0d1b2a;--surf:#1a2d42;
+      --accent:#0ea5e9;--text:#1e293b;--dim:#64748b;--bdr:#e2e8f0;
+      --green:#16a34a;--orange:#ea580c;--blue:#2563eb;--red:#dc2626;--yellow:#ca8a04;
+    }
+    body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;min-height:100vh;}
+
+    /* ── Header ── */
+    .hdr{background:var(--navy);color:#fff;padding:14px 24px;display:flex;align-items:center;justify-content:space-between;gap:16px;}
+    .hdr h1{font-size:18px;font-weight:700;color:#38bdf8;}
+    .hdr h1 span{color:#fff;font-weight:400;}
+    .hdr-right{font-size:12px;color:#94a3b8;text-align:right;}
+    .back-link{color:#94a3b8;text-decoration:none;font-size:13px;opacity:.8;}
+    .back-link:hover{opacity:1;color:#38bdf8;}
+
+    /* ── Main layout ── */
+    .main{max-width:1100px;margin:0 auto;padding:20px;}
+
+    /* ── Stats bar ── */
+    .stats{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px;margin-bottom:22px;}
+    .stat-card{background:var(--white);border-radius:10px;padding:14px 16px;border:1px solid var(--bdr);}
+    .stat-val{font-size:28px;font-weight:700;line-height:1;}
+    .stat-lbl{font-size:12px;color:var(--dim);margin-top:4px;}
+    .val-green{color:var(--green);}
+    .val-orange{color:var(--orange);}
+    .val-dim{color:var(--dim);}
+
+    /* ── Tabs ── */
+    .tabs{display:flex;gap:4px;margin-bottom:16px;background:var(--white);border-radius:10px;padding:4px;border:1px solid var(--bdr);width:fit-content;flex-wrap:wrap;}
+    .tab{padding:7px 18px;border-radius:7px;border:none;background:none;cursor:pointer;font-size:13px;font-weight:500;color:var(--dim);}
+    .tab.active{background:var(--navy);color:#fff;}
+
+    /* ── Panels ── */
+    .panel{display:none;}
+    .panel.active{display:block;}
+
+    /* ── Card ── */
+    .card{background:var(--white);border-radius:10px;border:1px solid var(--bdr);overflow:hidden;}
+    .card-hdr{padding:14px 18px;border-bottom:1px solid var(--bdr);display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;}
+    .card-hdr h2{font-size:14px;font-weight:600;}
+
+    /* ── Table ── */
+    .tbl-wrap{overflow-x:auto;}
+    table{width:100%;border-collapse:collapse;}
+    th{background:#f8fafc;font-size:11px;font-weight:600;color:var(--dim);text-transform:uppercase;letter-spacing:.5px;padding:9px 14px;text-align:left;border-bottom:1px solid var(--bdr);}
+    td{padding:10px 14px;font-size:13px;border-bottom:1px solid #f1f5f9;vertical-align:middle;}
+    tr:last-child td{border-bottom:none;}
+    tr:hover td{background:#f8fafc;}
+
+    /* ── Badges ── */
+    .badge{display:inline-block;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:600;}
+    .b-ti{background:#dcfce7;color:var(--green);}
+    .b-bo{background:#ffedd5;color:var(--orange);}
+    .b-bi{background:#dbeafe;color:var(--blue);}
+    .b-to{background:#fee2e2;color:var(--red);}
+    .b-synced{background:#f0fdf4;color:var(--green);}
+    .b-pend{background:#fff7ed;color:var(--orange);}
+
+    /* ── Staff status grid ── */
+    .s-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;padding:16px;}
+    .s-card{border:1px solid var(--bdr);border-radius:10px;padding:14px;display:flex;align-items:center;gap:12px;}
+    .av{width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff;font-size:16px;flex-shrink:0;}
+    .sc-name{font-size:14px;font-weight:600;}
+    .sc-status{font-size:12px;color:var(--dim);margin-top:2px;}
+    .sc-last{font-size:11px;color:var(--dim);margin-top:2px;}
+
+    /* ── Weekly view ── */
+    .week-day{margin-bottom:4px;}
+    .week-day-hdr{background:#f8fafc;padding:10px 14px;font-size:12px;font-weight:700;color:var(--dim);text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid var(--bdr);}
+    .week-day.today .week-day-hdr{background:#eff6ff;color:var(--blue);}
+    .week-none{padding:12px 14px;font-size:13px;color:var(--dim);font-style:italic;}
+    .hours-chip{display:inline-block;background:#eff6ff;color:var(--blue);border-radius:20px;padding:2px 8px;font-size:11px;font-weight:700;}
+    .still-in{color:var(--green);font-style:italic;font-size:12px;}
+
+    /* ── Settings ── */
+    .settings{padding:20px;}
+    .s-section{margin-bottom:28px;}
+    .s-section h3{font-size:13px;font-weight:700;color:var(--dim);text-transform:uppercase;letter-spacing:.5px;margin-bottom:14px;padding-bottom:8px;border-bottom:1px solid var(--bdr);}
+    label{display:block;font-size:13px;font-weight:500;margin-bottom:5px;color:var(--text);}
+    input[type=text],input[type=password],input[type=url]{width:100%;padding:9px 12px;border:1px solid var(--bdr);border-radius:8px;font-size:13px;color:var(--text);background:var(--white);margin-bottom:12px;}
+    input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 2px rgba(14,165,233,.15);}
+    .btn{padding:9px 18px;border-radius:8px;border:none;cursor:pointer;font-size:13px;font-weight:600;}
+    .btn-primary{background:var(--accent);color:#fff;}
+    .btn-primary:hover{background:#0284c7;}
+    .btn-danger{background:#fee2e2;color:var(--red);}
+    .btn-danger:hover{background:#fecaca;}
+    .btn-sm{padding:6px 12px;font-size:12px;}
+    .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;}
+    .msg{font-size:12px;color:var(--dim);margin-top:6px;}
+    .msg.ok{color:var(--green);}
+    .msg.err{color:var(--red);}
+    .staff-list-items{display:flex;flex-direction:column;gap:6px;margin-bottom:12px;max-height:260px;overflow-y:auto;}
+    .staff-item{display:flex;align-items:center;justify-content:space-between;padding:8px 12px;background:#f8fafc;border-radius:7px;font-size:13px;}
+    .remove-btn{color:var(--red);cursor:pointer;font-size:18px;line-height:1;opacity:.6;}
+    .remove-btn:hover{opacity:1;}
+    .add-row{display:flex;gap:8px;}
+    .add-row input{flex:1;margin:0;}
+    .sql-block{background:#0d1b2a;color:#a5f3fc;padding:14px;border-radius:8px;font-family:monospace;font-size:12px;line-height:1.6;overflow-x:auto;white-space:pre;}
+    .copy-btn{margin-top:8px;}
+
+    /* ── Misc ── */
+    .dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--green);}
+    .dot.off{background:var(--red);}
+    .export-btn{padding:8px 14px;border-radius:8px;border:1px solid var(--bdr);background:var(--white);cursor:pointer;font-size:13px;font-weight:500;color:var(--text);}
+    .export-btn:hover{background:#f8fafc;}
+    .empty{text-align:center;padding:40px 20px;color:var(--dim);}
+    .empty span{font-size:36px;display:block;margin-bottom:10px;}
+    .setup-notice{background:#fffbeb;border:1px solid #fde68a;border-radius:10px;padding:16px;margin-bottom:20px;font-size:13px;}
+    .setup-notice strong{color:#92400e;}
+    .refresh-note{font-size:11px;color:var(--dim);margin-left:8px;}
+
+    @media(max-width:600px){
+      .stats{grid-template-columns:repeat(2,1fr);}
+      .main{padding:12px;}
+    }
+  </style>
+</head>
+<body>
+
+<div class="hdr">
+  <h1>JumpStart <span>Admin</span></h1>
+  <div class="hdr-right">
+    <div id="todayLabel"></div>
+    <div style="margin-top:3px">
+      <span class="dot" id="dot"></span> <span id="netTxt">Online</span>
+      <span class="refresh-note" id="refreshNote"></span>
+    </div>
+  </div>
+  <a href="clockin.html" class="back-link">← Back to Kiosk</a>
+</div>
+
+<div class="main">
+  <div class="setup-notice" id="setupNotice" style="display:none">
+    <strong>⚙️ Supabase not configured.</strong>
+    This page can only show data from <em>this device</em>.
+    If admin and kiosk are on <strong>different devices</strong>, go to
+    <strong>Settings</strong> to connect Supabase so data syncs across devices.
+  </div>
+
+  <div class="stats">
+    <div class="stat-card"><div class="stat-val" id="sTot">0</div><div class="stat-lbl">Total Staff</div></div>
+    <div class="stat-card"><div class="stat-val val-green" id="sWork">0</div><div class="stat-lbl">Working</div></div>
+    <div class="stat-card"><div class="stat-val val-orange" id="sBrk">0</div><div class="stat-lbl">On Break</div></div>
+    <div class="stat-card"><div class="stat-val val-dim" id="sDone">0</div><div class="stat-lbl">Done</div></div>
+    <div class="stat-card"><div class="stat-val val-dim" id="sNone">0</div><div class="stat-lbl">Not In</div></div>
+    <div class="stat-card"><div class="stat-val val-orange" id="sPend">0</div><div class="stat-lbl">Pending Sync</div></div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('log',this)">Today's Log</button>
+    <button class="tab" onclick="switchTab('status',this)">Live Status</button>
+    <button class="tab" onclick="switchTab('week',this)">This Week</button>
+    <button class="tab" onclick="switchTab('settings',this)">Settings</button>
+  </div>
+
+  <!-- Today's Log -->
+  <div class="panel active" id="panLog">
+    <div class="card">
+      <div class="card-hdr">
+        <h2>Clock Events — <span id="logDate"></span></h2>
+        <button class="export-btn" onclick="exportTodayCSV()">⬇ Export CSV</button>
+      </div>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Time</th><th>Staff</th><th>Action</th><th>Sync</th></tr></thead>
+          <tbody id="logBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Live Status -->
+  <div class="panel" id="panStatus">
+    <div class="card">
+      <div class="card-hdr"><h2>Staff Status — Today</h2></div>
+      <div class="s-grid" id="statusGrid"></div>
+    </div>
+  </div>
+
+  <!-- This Week -->
+  <div class="panel" id="panWeek">
+    <div class="card">
+      <div class="card-hdr">
+        <h2>Timesheet — <span id="weekLabel"></span></h2>
+        <button class="export-btn" onclick="exportWeekCSV()">⬇ Export CSV</button>
+      </div>
+      <div id="weekContent"></div>
+    </div>
+  </div>
+
+  <!-- Settings -->
+  <div class="panel" id="panSettings">
+    <div class="card">
+      <div class="settings">
+
+        <div class="s-section">
+          <h3>Supabase Connection</h3>
+          <label for="sbUrl">Project URL</label>
+          <input type="url" id="sbUrl" placeholder="https://xxxx.supabase.co">
+          <label for="sbKey">Anon / Service Role Key</label>
+          <input type="password" id="sbKey" placeholder="eyJhbG…">
+          <div class="row">
+            <button class="btn btn-primary" onclick="saveSupabase()">Save & Connect</button>
+            <button class="btn btn-sm" onclick="testSupabase()">Test Connection</button>
+            <span class="msg" id="sbMsg"></span>
+          </div>
+
+          <details style="margin-top:16px">
+            <summary style="cursor:pointer;font-size:13px;font-weight:600;color:var(--accent)">
+              📋 Supabase table setup SQL
+            </summary>
+            <div style="margin-top:10px">
+              <div class="sql-block" id="sqlBlock">-- Run this in your Supabase SQL editor:
+
+create table clock_events (
+  id            bigint generated always as identity primary key,
+  staff_id      text        not null,
+  staff_name    text        not null,
+  event_type    text        not null,  -- time_in | break_out | break_in | time_out
+  event_timestamp timestamptz not null,
+  date_key      date        not null,
+  created_at    timestamptz default now()
+);
+
+alter table clock_events enable row level security;
+
+create policy "kiosk_insert" on clock_events
+  for insert to anon with check (true);
+
+create policy "kiosk_select" on clock_events
+  for select to anon using (true);</div>
+              <button class="btn btn-sm copy-btn" onclick="copySQL()">Copy SQL</button>
+            </div>
+          </details>
+        </div>
+
+        <div class="s-section">
+          <h3>Staff List</h3>
+          <div class="staff-list-items" id="staffListItems"></div>
+          <div class="add-row">
+            <input type="text" id="newStaffName" placeholder="Add staff name…" onkeydown="if(event.key==='Enter')addStaff()">
+            <button class="btn btn-primary btn-sm" onclick="addStaff()">Add</button>
+          </div>
+          <div class="msg" id="staffMsg"></div>
+        </div>
+
+        <div class="s-section">
+          <h3>Danger Zone</h3>
+          <p style="font-size:13px;color:var(--dim);margin-bottom:12px">Clear all locally stored clock events from this device. Does not delete data in Supabase.</p>
+          <button class="btn btn-danger" onclick="clearLocalData()">Clear Local Data</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── Config ────────────────────────────────────────────────────
+const CFG_KEY = 'js_config';
+let CFG = {
+  supabaseUrl: '', supabaseKey: '',
+  staff: [
+    { id:'s1', name:'Alice Santos' },
+    { id:'s2', name:'Bob Reyes' },
+    { id:'s3', name:'Carol Dela Cruz' },
+    { id:'s4', name:'Diana Tan' },
+    { id:'s5', name:'Eddie Lopez' },
+    { id:'s6', name:'Frank Bautista' },
+  ]
+};
+try { const s = localStorage.getItem(CFG_KEY); if (s) CFG = { ...CFG, ...JSON.parse(s) }; } catch(e){}
+function saveCFG() { localStorage.setItem(CFG_KEY, JSON.stringify(CFG)); }
+
+// ── Timezone helpers — always Philippine Standard Time (UTC+8) ─
+const PHT = 8 * 3600000;
+function phDate(ts) {
+  const d = new Date((ts != null ? ts : Date.now()) + PHT);
+  return `${d.getUTCFullYear()}-${String(d.getUTCMonth()+1).padStart(2,'0')}-${String(d.getUTCDate()).padStart(2,'0')}`;
+}
+function todayKey() { return phDate(); }
+
+function fmtTimeIso(iso) {
+  if (!iso) return '—';
+  return new Date(iso).toLocaleTimeString('en-PH',{
+    hour:'2-digit',minute:'2-digit',hour12:true,timeZone:'Asia/Manila'
+  });
+}
+function fmtDateHeader(dateKey) {
+  const [y,m,d] = dateKey.split('-').map(Number);
+  return new Date(Date.UTC(y,m-1,d)).toLocaleDateString('en-PH',{
+    weekday:'long',year:'numeric',month:'long',day:'numeric',timeZone:'UTC'
+  });
+}
+// Get the correct timestamp from either local (timestamp) or Supabase (event_timestamp) record
+function getTs(ev) { return ev.event_timestamp || ev.timestamp; }
+
+function avatarColor(name) {
+  const p=['#0ea5e9,#6366f1','#10b981,#3b82f6','#f59e0b,#ef4444','#8b5cf6,#ec4899','#14b8a6,#6366f1','#f97316,#3b82f6'];
+  let h=0; for(let i=0;i<name.length;i++) h=(h*31+name.charCodeAt(i))&0xffffff;
+  return p[Math.abs(h)%p.length];
+}
+function initials(n) { return n.split(' ').map(p=>p[0]).join('').slice(0,2).toUpperCase(); }
+function esc(s) { const d=document.createElement('div');d.textContent=s;return d.innerHTML; }
+function randId() { return 's'+Math.random().toString(36).slice(2,8); }
+
+const EVT_LABEL = { time_in:'Time In', break_out:'Break Out', break_in:'Break In', time_out:'Time Out' };
+const EVT_BADGE = { time_in:'b-ti', break_out:'b-bo', break_in:'b-bi', time_out:'b-to' };
+const STATUS_FROM_EVENT = { time_in:'working', break_out:'on_break', break_in:'working', time_out:'out' };
+const STATUS_TEXT = { none:'Not clocked in', working:'Working', on_break:'On Break', out:'Done for today' };
+
+// ── IndexedDB ─────────────────────────────────────────────────
+let IDB = null;
+function openDB() {
+  return new Promise((res, rej) => {
+    const r = indexedDB.open('jumpstart-clockin', 1);
+    r.onupgradeneeded = e => {
+      const db = e.target.result;
+      if (!db.objectStoreNames.contains('events')) {
+        const s = db.createObjectStore('events', { keyPath:'id', autoIncrement:true });
+        s.createIndex('synced','synced');
+        s.createIndex('date_key','date_key');
+        s.createIndex('staff_id','staff_id');
+      }
+    };
+    r.onsuccess = e => { IDB = e.target.result; res(); };
+    r.onerror = e => rej(e.target.error);
+  });
+}
+
+function dbGetByDate(dateKey) {
+  return new Promise((res, rej) => {
+    const idx = IDB.transaction('events','readonly').objectStore('events').index('date_key');
+    const r = idx.getAll(dateKey);
+    r.onsuccess = e => res(e.target.result || []);
+    r.onerror = e => rej(e.target.error);
+  });
+}
+
+function dbGetByDateRange(from, to) {
+  return new Promise((res, rej) => {
+    const idx = IDB.transaction('events','readonly').objectStore('events').index('date_key');
+    const r = idx.getAll(IDBKeyRange.bound(from, to));
+    r.onsuccess = e => res(e.target.result || []);
+    r.onerror = e => rej(e.target.error);
+  });
+}
+
+function dbGetPending() {
+  return new Promise((res, rej) => {
+    const idx = IDB.transaction('events','readonly').objectStore('events').index('synced');
+    const r = idx.getAll(0);
+    r.onsuccess = e => res(e.target.result || []);
+    r.onerror = e => rej(e.target.error);
+  });
+}
+
+function dbClearAll() {
+  return new Promise((res, rej) => {
+    const t = IDB.transaction('events','readwrite');
+    const r = t.objectStore('events').clear();
+    r.onsuccess = () => res();
+    r.onerror = e => rej(e.target.error);
+  });
+}
+
+// ── Supabase fetchers ─────────────────────────────────────────
+async function sbFetch(path) {
+  if (!CFG.supabaseUrl || !CFG.supabaseKey) return null;
+  try {
+    const r = await fetch(`${CFG.supabaseUrl}/rest/v1/${path}`, {
+      headers: { 'apikey': CFG.supabaseKey, 'Authorization': `Bearer ${CFG.supabaseKey}` }
+    });
+    if (r.ok) return await r.json();
+  } catch(_) {}
+  return null;
+}
+
+// ── Week range ────────────────────────────────────────────────
+function getWeekRange() {
+  // Compute Monday–Sunday using PHT
+  const phNow = new Date(Date.now() + PHT);
+  const dow = phNow.getUTCDay(); // 0=Sun
+  const toMon = dow === 0 ? 6 : dow - 1;
+  const dates = [];
+  for (let i = 0; i < 7; i++) {
+    dates.push(phDate(Date.now() + (i - toMon) * 86400000));
+  }
+  return { from: dates[0], to: dates[6], dates };
+}
+
+// ── Live data ─────────────────────────────────────────────────
+let todayEvents = [];     // from local IndexedDB
+let supabaseToday = [];   // from Supabase
+let weekEvents = [];      // from Supabase or IndexedDB, entire week
+
+// Merge: prefer Supabase when available
+function todaySource() { return supabaseToday.length ? supabaseToday : todayEvents; }
+
+async function loadData() {
+  const today = todayKey();
+  document.getElementById('logDate').textContent = today;
+  document.getElementById('todayLabel').textContent = today;
+
+  // Local
+  todayEvents = await dbGetByDate(today);
+  todayEvents.sort((a,b) => getTs(a) > getTs(b) ? 1 : -1);
+
+  // Supabase — today
+  const sbToday = await sbFetch(`clock_events?date_key=eq.${today}&order=event_timestamp.asc&limit=500`);
+  supabaseToday = sbToday || [];
+
+  // Week
+  const range = getWeekRange();
+  document.getElementById('weekLabel').textContent = `${range.from} to ${range.to}`;
+  const sbWeek = await sbFetch(`clock_events?date_key=gte.${range.from}&date_key=lte.${range.to}&order=event_timestamp.asc&limit=2000`);
+  if (sbWeek) {
+    weekEvents = sbWeek;
+  } else {
+    weekEvents = await dbGetByDateRange(range.from, range.to);
+  }
+
+  const pending = await dbGetPending();
+  renderStats(pending.length);
+  renderLog(pending);
+  renderStatusGrid();
+  renderWeekly(range);
+  updateRefreshNote();
+}
+
+// ── Stats ─────────────────────────────────────────────────────
+function renderStats(pendingCount) {
+  const src = todaySource();
+  const byStaff = {};
+  src.forEach(ev => {
+    if (!byStaff[ev.staff_id]) byStaff[ev.staff_id] = [];
+    byStaff[ev.staff_id].push(ev);
+  });
+
+  const statusMap = {};
+  CFG.staff.forEach(s => { statusMap[s.id] = 'none'; });
+  CFG.staff.forEach(s => {
+    const evs = (byStaff[s.id] || []).sort((a,b) => getTs(a) > getTs(b) ? 1 : -1);
+    if (evs.length) statusMap[s.id] = STATUS_FROM_EVENT[evs[evs.length-1].event_type] || 'none';
+  });
+
+  const counts = { none:0, working:0, on_break:0, out:0 };
+  Object.values(statusMap).forEach(st => counts[st]++);
+
+  document.getElementById('sTot').textContent = CFG.staff.length;
+  document.getElementById('sWork').textContent = counts.working;
+  document.getElementById('sBrk').textContent = counts.on_break;
+  document.getElementById('sDone').textContent = counts.out;
+  document.getElementById('sNone').textContent = counts.none;
+  document.getElementById('sPend').textContent = pendingCount;
+}
+
+// ── Today's Log ───────────────────────────────────────────────
+function renderLog(pending) {
+  const pendingIds = new Set(pending.map(p => p.id));
+  const useSupabase = supabaseToday.length > 0;
+  const source = useSupabase ? [...supabaseToday].reverse() : [...todayEvents].reverse();
+  const body = document.getElementById('logBody');
+
+  if (!source.length) {
+    body.innerHTML = `<tr><td colspan="4"><div class="empty"><span>📋</span>No events today yet</div></td></tr>`;
+    return;
+  }
+
+  body.innerHTML = source.map(ev => {
+    const ts = getTs(ev);
+    // Supabase records are already synced; local records check the pending set
+    const synced = useSupabase || !pendingIds.has(ev.id);
+    return `<tr>
+      <td>${fmtTimeIso(ts)}</td>
+      <td>${esc(ev.staff_name)}</td>
+      <td><span class="badge ${EVT_BADGE[ev.event_type]||''}">${esc(EVT_LABEL[ev.event_type]||ev.event_type)}</span></td>
+      <td><span class="badge ${synced?'b-synced':'b-pend'}">${synced?'Synced':'Pending'}</span></td>
+    </tr>`;
+  }).join('');
+}
+
+// ── Live Status ───────────────────────────────────────────────
+function renderStatusGrid() {
+  const src = todaySource();
+  const byStaff = {};
+  src.forEach(ev => {
+    if (!byStaff[ev.staff_id]) byStaff[ev.staff_id] = [];
+    byStaff[ev.staff_id].push(ev);
+  });
+
+  document.getElementById('statusGrid').innerHTML = CFG.staff.map(s => {
+    const evs = (byStaff[s.id] || []).sort((a,b) => getTs(a) > getTs(b) ? 1 : -1);
+    const last = evs[evs.length-1] || null;
+    const st = last ? (STATUS_FROM_EVENT[last.event_type] || 'none') : 'none';
+    const col = avatarColor(s.name);
+    const lastTxt = last
+      ? `${EVT_LABEL[last.event_type]} at ${fmtTimeIso(getTs(last))}`
+      : 'No events today';
+    return `<div class="s-card">
+      <div class="av" style="background:linear-gradient(135deg,${col})">${initials(s.name)}</div>
+      <div>
+        <div class="sc-name">${esc(s.name)}</div>
+        <div class="sc-status">${STATUS_TEXT[st]}</div>
+        <div class="sc-last">${esc(lastTxt)}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ── Weekly Timesheet ──────────────────────────────────────────
+function computeDayHours(dayEvs) {
+  // dayEvs sorted oldest→newest for one staff one day
+  let firstIn = null, lastOut = null, breakMs = 0, lastBreakOut = null;
+  dayEvs.forEach(ev => {
+    const t = new Date(getTs(ev));
+    if (ev.event_type === 'time_in' && !firstIn) firstIn = t;
+    if (ev.event_type === 'time_out') lastOut = t;
+    if (ev.event_type === 'break_out') lastBreakOut = t;
+    if (ev.event_type === 'break_in' && lastBreakOut) {
+      breakMs += t - lastBreakOut;
+      lastBreakOut = null;
+    }
+  });
+
+  const result = { inTime: firstIn, outTime: lastOut, breakMs, hoursStr: null };
+  if (firstIn && lastOut) {
+    const net = Math.max(0, (lastOut - firstIn) - breakMs);
+    const h = Math.floor(net / 3600000);
+    const m = Math.floor((net % 3600000) / 60000);
+    result.hoursStr = `${h}h ${String(m).padStart(2,'0')}m`;
+  }
+  return result;
+}
+
+function renderWeekly(range) {
+  const today = todayKey();
+  const byDateStaff = {};
+
+  weekEvents.forEach(ev => {
+    const dk = ev.date_key || phDate(new Date(getTs(ev)).getTime());
+    if (!byDateStaff[dk]) byDateStaff[dk] = {};
+    if (!byDateStaff[dk][ev.staff_id]) byDateStaff[dk][ev.staff_id] = { name: ev.staff_name, evs: [] };
+    byDateStaff[dk][ev.staff_id].evs.push(ev);
+  });
+
+  const content = document.getElementById('weekContent');
+  if (!range.dates.some(d => byDateStaff[d])) {
+    content.innerHTML = `<div class="empty"><span>📅</span>No events this week yet</div>`;
+    return;
+  }
+
+  content.innerHTML = range.dates.map(dateKey => {
+    const dayData = byDateStaff[dateKey];
+    const isToday = dateKey === today;
+    const hdr = fmtDateHeader(dateKey);
+
+    if (!dayData || !Object.keys(dayData).length) {
+      return `<div class="week-day${isToday?' today':''}">
+        <div class="week-day-hdr">${esc(hdr)}${isToday?' — TODAY':''}</div>
+        <div class="week-none">No clock events</div>
+      </div>`;
+    }
+
+    // Build staff rows sorted by time_in
+    const staffRows = Object.values(dayData)
+      .map(sd => {
+        const evs = sd.evs.sort((a,b) => getTs(a) > getTs(b) ? 1 : -1);
+        return { name: sd.name, ...computeDayHours(evs) };
+      })
+      .sort((a,b) => (a.inTime || 0) > (b.inTime || 0) ? 1 : -1);
+
+    const rows = staffRows.map(r => {
+      const inStr = r.inTime ? fmtTimeIso(r.inTime.toISOString()) : '—';
+      const outStr = r.outTime ? fmtTimeIso(r.outTime.toISOString()) : `<span class="still-in">Still in</span>`;
+      const breakStr = r.breakMs > 0
+        ? `${Math.round(r.breakMs/60000)}m`
+        : '—';
+      const hoursStr = r.hoursStr
+        ? `<span class="hours-chip">${r.hoursStr}</span>`
+        : (r.inTime ? '<span class="still-in">In progress</span>' : '—');
+      return `<tr>
+        <td>${esc(r.name)}</td>
+        <td>${inStr}</td>
+        <td>${outStr}</td>
+        <td>${breakStr}</td>
+        <td>${hoursStr}</td>
+      </tr>`;
+    }).join('');
+
+    return `<div class="week-day${isToday?' today':''}">
+      <div class="week-day-hdr">${esc(hdr)}${isToday?' — TODAY':''}</div>
+      <div class="tbl-wrap"><table>
+        <thead><tr><th>Staff</th><th>Time In</th><th>Time Out</th><th>Break</th><th>Net Hours</th></tr></thead>
+        <tbody>${rows}</tbody>
+      </table></div>
+    </div>`;
+  }).join('');
+}
+
+// ── Export CSV ────────────────────────────────────────────────
+function exportTodayCSV() {
+  const source = todaySource();
+  if (!source.length) { alert('No data to export today.'); return; }
+  const rows = [['Time','Staff ID','Staff Name','Event','Date']];
+  [...source].reverse().forEach(ev => {
+    rows.push([fmtTimeIso(getTs(ev)), ev.staff_id, ev.staff_name, ev.event_type, ev.date_key || todayKey()]);
+  });
+  downloadCSV(rows, `clockin-today-${todayKey()}.csv`);
+}
+
+function exportWeekCSV() {
+  if (!weekEvents.length) { alert('No data this week to export.'); return; }
+  const range = getWeekRange();
+  const rows = [['Date','Staff ID','Staff Name','Event','Time']];
+  weekEvents.forEach(ev => {
+    rows.push([ev.date_key || '', ev.staff_id, ev.staff_name, ev.event_type, fmtTimeIso(getTs(ev))]);
+  });
+  downloadCSV(rows, `clockin-week-${range.from}.csv`);
+}
+
+function downloadCSV(rows, filename) {
+  const csv = rows.map(r => r.map(c => `"${String(c).replace(/"/g,'""')}"`).join(',')).join('\n');
+  const a = document.createElement('a');
+  a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
+  a.download = filename;
+  a.click();
+}
+
+// ── Tabs ──────────────────────────────────────────────────────
+function switchTab(id, btn) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('pan' + id.charAt(0).toUpperCase() + id.slice(1)).classList.add('active');
+  btn.classList.add('active');
+}
+
+// ── Settings ──────────────────────────────────────────────────
+function loadSettingsUI() {
+  document.getElementById('sbUrl').value = CFG.supabaseUrl || '';
+  document.getElementById('sbKey').value = CFG.supabaseKey || '';
+  renderStaffList();
+}
+
+function saveSupabase() {
+  CFG.supabaseUrl = document.getElementById('sbUrl').value.trim().replace(/\/$/,'');
+  CFG.supabaseKey = document.getElementById('sbKey').value.trim();
+  saveCFG();
+  document.getElementById('sbMsg').textContent = '✓ Saved';
+  document.getElementById('sbMsg').className = 'msg ok';
+  document.getElementById('setupNotice').style.display = !CFG.supabaseUrl ? 'block' : 'none';
+  setTimeout(() => { document.getElementById('sbMsg').textContent = ''; }, 2500);
+  loadData();
+}
+
+async function testSupabase() {
+  const url = document.getElementById('sbUrl').value.trim().replace(/\/$/,'');
+  const key = document.getElementById('sbKey').value.trim();
+  const msg = document.getElementById('sbMsg');
+  if (!url || !key) { msg.textContent='⚠️ Fill URL and Key first'; msg.className='msg err'; return; }
+  msg.textContent='Testing…'; msg.className='msg';
+  try {
+    const r = await fetch(`${url}/rest/v1/clock_events?limit=1`, {
+      headers:{'apikey':key,'Authorization':`Bearer ${key}`}
+    });
+    if (r.ok) { msg.textContent='✓ Connected!'; msg.className='msg ok'; }
+    else { msg.textContent=`✗ Error ${r.status} — check key or create the table`; msg.className='msg err'; }
+  } catch(e) { msg.textContent='✗ Cannot reach Supabase — check URL'; msg.className='msg err'; }
+}
+
+function renderStaffList() {
+  document.getElementById('staffListItems').innerHTML = CFG.staff.map(s =>
+    `<div class="staff-item">
+      <span>${esc(s.name)}</span>
+      <span class="remove-btn" onclick="removeStaff('${esc(s.id)}')" title="Remove">×</span>
+    </div>`
+  ).join('');
+}
+
+function addStaff() {
+  const input = document.getElementById('newStaffName');
+  const name = input.value.trim();
+  if (!name) return;
+  if (CFG.staff.some(s => s.name.toLowerCase() === name.toLowerCase())) {
+    document.getElementById('staffMsg').textContent = '⚠️ Name already exists';
+    return;
+  }
+  CFG.staff.push({ id: randId(), name });
+  saveCFG();
+  input.value = '';
+  document.getElementById('staffMsg').textContent = '';
+  renderStaffList();
+}
+
+function removeStaff(id) {
+  if (!confirm('Remove this staff member from the kiosk list?')) return;
+  CFG.staff = CFG.staff.filter(s => s.id !== id);
+  saveCFG();
+  renderStaffList();
+}
+
+function clearLocalData() {
+  if (!confirm('Clear ALL local clock event data from this device?\n\nData already synced to Supabase is safe.')) return;
+  dbClearAll().then(() => { alert('Local data cleared.'); loadData(); });
+}
+
+function copySQL() {
+  navigator.clipboard.writeText(document.getElementById('sqlBlock').textContent)
+    .then(() => alert('SQL copied to clipboard!'))
+    .catch(() => alert('Select the text manually and copy.'));
+}
+
+// ── Network ───────────────────────────────────────────────────
+function setDot(online) {
+  document.getElementById('dot').className = 'dot' + (online ? '' : ' off');
+  document.getElementById('netTxt').textContent = online ? 'Online' : 'Offline';
+}
+window.addEventListener('online',  () => { setDot(true);  loadData(); });
+window.addEventListener('offline', () => setDot(false));
+
+let lastRefresh = null;
+function updateRefreshNote() {
+  lastRefresh = new Date();
+  document.getElementById('refreshNote').textContent =
+    `· refreshed ${lastRefresh.toLocaleTimeString('en-PH',{hour:'2-digit',minute:'2-digit',timeZone:'Asia/Manila'})}`;
+}
+
+// ── Init ──────────────────────────────────────────────────────
+(async () => {
+  setDot(navigator.onLine);
+  document.getElementById('setupNotice').style.display = !CFG.supabaseUrl ? 'block' : 'none';
+  await openDB();
+  loadSettingsUI();
+  await loadData();
+  setInterval(loadData, 15000); // refresh every 15s for near-live status
+})();
+</script>
+</body>
+</html>
