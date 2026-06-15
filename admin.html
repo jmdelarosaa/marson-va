@@ -31,21 +31,20 @@
     .stat-lbl{font-size:12px;color:var(--dim);margin-top:4px;}
     .val-green{color:var(--green);}
     .val-orange{color:var(--orange);}
-    .val-blue{color:var(--blue);}
     .val-dim{color:var(--dim);}
 
     /* ── Tabs ── */
-    .tabs{display:flex;gap:4px;margin-bottom:16px;background:var(--white);border-radius:10px;padding:4px;border:1px solid var(--bdr);width:fit-content;}
+    .tabs{display:flex;gap:4px;margin-bottom:16px;background:var(--white);border-radius:10px;padding:4px;border:1px solid var(--bdr);width:fit-content;flex-wrap:wrap;}
     .tab{padding:7px 18px;border-radius:7px;border:none;background:none;cursor:pointer;font-size:13px;font-weight:500;color:var(--dim);}
     .tab.active{background:var(--navy);color:#fff;}
 
-    /* ── Panel ── */
+    /* ── Panels ── */
     .panel{display:none;}
     .panel.active{display:block;}
 
-    /* ── Card wrapper ── */
+    /* ── Card ── */
     .card{background:var(--white);border-radius:10px;border:1px solid var(--bdr);overflow:hidden;}
-    .card-hdr{padding:14px 18px;border-bottom:1px solid var(--bdr);display:flex;align-items:center;justify-content:space-between;}
+    .card-hdr{padding:14px 18px;border-bottom:1px solid var(--bdr);display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;}
     .card-hdr h2{font-size:14px;font-weight:600;}
 
     /* ── Table ── */
@@ -66,12 +65,20 @@
     .b-pend{background:#fff7ed;color:var(--orange);}
 
     /* ── Staff status grid ── */
-    .staff-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;padding:16px;}
-    .staff-card{border:1px solid var(--bdr);border-radius:10px;padding:14px;display:flex;align-items:center;gap:12px;}
+    .s-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;padding:16px;}
+    .s-card{border:1px solid var(--bdr);border-radius:10px;padding:14px;display:flex;align-items:center;gap:12px;}
     .av{width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff;font-size:16px;flex-shrink:0;}
-    .sc-info .sc-name{font-size:14px;font-weight:600;}
-    .sc-info .sc-status{font-size:12px;color:var(--dim);margin-top:2px;}
-    .sc-info .sc-last{font-size:11px;color:var(--dim);margin-top:2px;}
+    .sc-name{font-size:14px;font-weight:600;}
+    .sc-status{font-size:12px;color:var(--dim);margin-top:2px;}
+    .sc-last{font-size:11px;color:var(--dim);margin-top:2px;}
+
+    /* ── Weekly view ── */
+    .week-day{margin-bottom:4px;}
+    .week-day-hdr{background:#f8fafc;padding:10px 14px;font-size:12px;font-weight:700;color:var(--dim);text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid var(--bdr);}
+    .week-day.today .week-day-hdr{background:#eff6ff;color:var(--blue);}
+    .week-none{padding:12px 14px;font-size:13px;color:var(--dim);font-style:italic;}
+    .hours-chip{display:inline-block;background:#eff6ff;color:var(--blue);border-radius:20px;padding:2px 8px;font-size:11px;font-weight:700;}
+    .still-in{color:var(--green);font-style:italic;font-size:12px;}
 
     /* ── Settings ── */
     .settings{padding:20px;}
@@ -90,35 +97,25 @@
     .msg{font-size:12px;color:var(--dim);margin-top:6px;}
     .msg.ok{color:var(--green);}
     .msg.err{color:var(--red);}
-
-    /* ── Staff list management ── */
     .staff-list-items{display:flex;flex-direction:column;gap:6px;margin-bottom:12px;max-height:260px;overflow-y:auto;}
     .staff-item{display:flex;align-items:center;justify-content:space-between;padding:8px 12px;background:#f8fafc;border-radius:7px;font-size:13px;}
-    .staff-item .remove-btn{color:var(--red);cursor:pointer;font-size:18px;line-height:1;opacity:.6;}
-    .staff-item .remove-btn:hover{opacity:1;}
+    .remove-btn{color:var(--red);cursor:pointer;font-size:18px;line-height:1;opacity:.6;}
+    .remove-btn:hover{opacity:1;}
     .add-row{display:flex;gap:8px;}
     .add-row input{flex:1;margin:0;}
-
-    /* ── SQL block ── */
     .sql-block{background:#0d1b2a;color:#a5f3fc;padding:14px;border-radius:8px;font-family:monospace;font-size:12px;line-height:1.6;overflow-x:auto;white-space:pre;}
     .copy-btn{margin-top:8px;}
 
-    /* ── Sync status ── */
-    .sync-bar{display:flex;align-items:center;gap:10px;font-size:13px;}
+    /* ── Misc ── */
     .dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--green);}
     .dot.off{background:var(--red);}
-
-    /* ── Export btn ── */
     .export-btn{padding:8px 14px;border-radius:8px;border:1px solid var(--bdr);background:var(--white);cursor:pointer;font-size:13px;font-weight:500;color:var(--text);}
     .export-btn:hover{background:#f8fafc;}
-
-    /* ── Empty state ── */
     .empty{text-align:center;padding:40px 20px;color:var(--dim);}
     .empty span{font-size:36px;display:block;margin-bottom:10px;}
-
-    /* ── Setup notice ── */
     .setup-notice{background:#fffbeb;border:1px solid #fde68a;border-radius:10px;padding:16px;margin-bottom:20px;font-size:13px;}
     .setup-notice strong{color:#92400e;}
+    .refresh-note{font-size:11px;color:var(--dim);margin-left:8px;}
 
     @media(max-width:600px){
       .stats{grid-template-columns:repeat(2,1fr);}
@@ -134,20 +131,20 @@
     <div id="todayLabel"></div>
     <div style="margin-top:3px">
       <span class="dot" id="dot"></span> <span id="netTxt">Online</span>
+      <span class="refresh-note" id="refreshNote"></span>
     </div>
   </div>
   <a href="clockin.html" class="back-link">← Back to Kiosk</a>
 </div>
 
 <div class="main">
-  <!-- Setup notice shown when Supabase not yet configured -->
   <div class="setup-notice" id="setupNotice" style="display:none">
-    <strong>⚙️ Supabase not configured yet.</strong>
-    Data shown below is from <em>this device only</em>.
-    Go to <strong>Settings</strong> tab to connect Supabase and enable cross-device sync.
+    <strong>⚙️ Supabase not configured.</strong>
+    This page can only show data from <em>this device</em>.
+    If admin and kiosk are on <strong>different devices</strong>, go to
+    <strong>Settings</strong> to connect Supabase so data syncs across devices.
   </div>
 
-  <!-- Stats -->
   <div class="stats">
     <div class="stat-card"><div class="stat-val" id="sTot">0</div><div class="stat-lbl">Total Staff</div></div>
     <div class="stat-card"><div class="stat-val val-green" id="sWork">0</div><div class="stat-lbl">Working</div></div>
@@ -157,19 +154,19 @@
     <div class="stat-card"><div class="stat-val val-orange" id="sPend">0</div><div class="stat-lbl">Pending Sync</div></div>
   </div>
 
-  <!-- Tabs -->
   <div class="tabs">
     <button class="tab active" onclick="switchTab('log',this)">Today's Log</button>
-    <button class="tab" onclick="switchTab('status',this)">Staff Status</button>
+    <button class="tab" onclick="switchTab('status',this)">Live Status</button>
+    <button class="tab" onclick="switchTab('week',this)">This Week</button>
     <button class="tab" onclick="switchTab('settings',this)">Settings</button>
   </div>
 
-  <!-- Panel: Today's Log -->
+  <!-- Today's Log -->
   <div class="panel active" id="panLog">
     <div class="card">
       <div class="card-hdr">
         <h2>Clock Events — <span id="logDate"></span></h2>
-        <button class="export-btn" onclick="exportCSV()">⬇ Export CSV</button>
+        <button class="export-btn" onclick="exportTodayCSV()">⬇ Export CSV</button>
       </div>
       <div class="tbl-wrap">
         <table>
@@ -180,20 +177,30 @@
     </div>
   </div>
 
-  <!-- Panel: Staff Status -->
+  <!-- Live Status -->
   <div class="panel" id="panStatus">
     <div class="card">
       <div class="card-hdr"><h2>Staff Status — Today</h2></div>
-      <div class="staff-grid" id="statusGrid"></div>
+      <div class="s-grid" id="statusGrid"></div>
     </div>
   </div>
 
-  <!-- Panel: Settings -->
+  <!-- This Week -->
+  <div class="panel" id="panWeek">
+    <div class="card">
+      <div class="card-hdr">
+        <h2>Timesheet — <span id="weekLabel"></span></h2>
+        <button class="export-btn" onclick="exportWeekCSV()">⬇ Export CSV</button>
+      </div>
+      <div id="weekContent"></div>
+    </div>
+  </div>
+
+  <!-- Settings -->
   <div class="panel" id="panSettings">
     <div class="card">
       <div class="settings">
 
-        <!-- Supabase config -->
         <div class="s-section">
           <h3>Supabase Connection</h3>
           <label for="sbUrl">Project URL</label>
@@ -235,7 +242,6 @@ create policy "kiosk_select" on clock_events
           </details>
         </div>
 
-        <!-- Staff list -->
         <div class="s-section">
           <h3>Staff List</h3>
           <div class="staff-list-items" id="staffListItems"></div>
@@ -246,10 +252,9 @@ create policy "kiosk_select" on clock_events
           <div class="msg" id="staffMsg"></div>
         </div>
 
-        <!-- Danger zone -->
         <div class="s-section">
           <h3>Danger Zone</h3>
-          <p style="font-size:13px;color:var(--dim);margin-bottom:12px">Clear all locally stored clock events (does not delete data from Supabase).</p>
+          <p style="font-size:13px;color:var(--dim);margin-bottom:12px">Clear all locally stored clock events from this device. Does not delete data in Supabase.</p>
           <button class="btn btn-danger" onclick="clearLocalData()">Clear Local Data</button>
         </div>
       </div>
@@ -272,10 +277,46 @@ let CFG = {
   ]
 };
 try { const s = localStorage.getItem(CFG_KEY); if (s) CFG = { ...CFG, ...JSON.parse(s) }; } catch(e){}
-
 function saveCFG() { localStorage.setItem(CFG_KEY, JSON.stringify(CFG)); }
 
-// ── IndexedDB (same schema as clockin.html) ────────────────────
+// ── Timezone helpers — always Philippine Standard Time (UTC+8) ─
+const PHT = 8 * 3600000;
+function phDate(ts) {
+  const d = new Date((ts != null ? ts : Date.now()) + PHT);
+  return `${d.getUTCFullYear()}-${String(d.getUTCMonth()+1).padStart(2,'0')}-${String(d.getUTCDate()).padStart(2,'0')}`;
+}
+function todayKey() { return phDate(); }
+
+function fmtTimeIso(iso) {
+  if (!iso) return '—';
+  return new Date(iso).toLocaleTimeString('en-PH',{
+    hour:'2-digit',minute:'2-digit',hour12:true,timeZone:'Asia/Manila'
+  });
+}
+function fmtDateHeader(dateKey) {
+  const [y,m,d] = dateKey.split('-').map(Number);
+  return new Date(Date.UTC(y,m-1,d)).toLocaleDateString('en-PH',{
+    weekday:'long',year:'numeric',month:'long',day:'numeric',timeZone:'UTC'
+  });
+}
+// Get the correct timestamp from either local (timestamp) or Supabase (event_timestamp) record
+function getTs(ev) { return ev.event_timestamp || ev.timestamp; }
+
+function avatarColor(name) {
+  const p=['#0ea5e9,#6366f1','#10b981,#3b82f6','#f59e0b,#ef4444','#8b5cf6,#ec4899','#14b8a6,#6366f1','#f97316,#3b82f6'];
+  let h=0; for(let i=0;i<name.length;i++) h=(h*31+name.charCodeAt(i))&0xffffff;
+  return p[Math.abs(h)%p.length];
+}
+function initials(n) { return n.split(' ').map(p=>p[0]).join('').slice(0,2).toUpperCase(); }
+function esc(s) { const d=document.createElement('div');d.textContent=s;return d.innerHTML; }
+function randId() { return 's'+Math.random().toString(36).slice(2,8); }
+
+const EVT_LABEL = { time_in:'Time In', break_out:'Break Out', break_in:'Break In', time_out:'Time Out' };
+const EVT_BADGE = { time_in:'b-ti', break_out:'b-bo', break_in:'b-bi', time_out:'b-to' };
+const STATUS_FROM_EVENT = { time_in:'working', break_out:'on_break', break_in:'working', time_out:'out' };
+const STATUS_TEXT = { none:'Not clocked in', working:'Working', on_break:'On Break', out:'Done for today' };
+
+// ── IndexedDB ─────────────────────────────────────────────────
 let IDB = null;
 function openDB() {
   return new Promise((res, rej) => {
@@ -303,6 +344,15 @@ function dbGetByDate(dateKey) {
   });
 }
 
+function dbGetByDateRange(from, to) {
+  return new Promise((res, rej) => {
+    const idx = IDB.transaction('events','readonly').objectStore('events').index('date_key');
+    const r = idx.getAll(IDBKeyRange.bound(from, to));
+    r.onsuccess = e => res(e.target.result || []);
+    r.onerror = e => rej(e.target.error);
+  });
+}
+
 function dbGetPending() {
   return new Promise((res, rej) => {
     const idx = IDB.transaction('events','readonly').objectStore('events').index('synced');
@@ -321,73 +371,83 @@ function dbClearAll() {
   });
 }
 
-// ── Helpers ───────────────────────────────────────────────────
-function todayKey() { return new Date().toISOString().split('T')[0]; }
-function fmtTime(iso) {
-  return new Date(iso).toLocaleTimeString('en-PH',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
-}
-function initials(n) { return n.split(' ').map(p=>p[0]).join('').slice(0,2).toUpperCase(); }
-function esc(s) { const d=document.createElement('div');d.textContent=s;return d.innerHTML; }
-function randId() { return 's' + Math.random().toString(36).slice(2,8); }
-
-function avatarColor(name) {
-  const p=['#0ea5e9,#6366f1','#10b981,#3b82f6','#f59e0b,#ef4444','#8b5cf6,#ec4899','#14b8a6,#6366f1','#f97316,#3b82f6'];
-  let h=0; for(let i=0;i<name.length;i++) h=(h*31+name.charCodeAt(i))&0xffffff;
-  return p[Math.abs(h)%p.length];
+// ── Supabase fetchers ─────────────────────────────────────────
+async function sbFetch(path) {
+  if (!CFG.supabaseUrl || !CFG.supabaseKey) return null;
+  try {
+    const r = await fetch(`${CFG.supabaseUrl}/rest/v1/${path}`, {
+      headers: { 'apikey': CFG.supabaseKey, 'Authorization': `Bearer ${CFG.supabaseKey}` }
+    });
+    if (r.ok) return await r.json();
+  } catch(_) {}
+  return null;
 }
 
-const EVT_LABEL = { time_in:'Time In', break_out:'Break Out', break_in:'Break In', time_out:'Time Out' };
-const EVT_BADGE = { time_in:'b-ti', break_out:'b-bo', break_in:'b-bi', time_out:'b-to' };
-const STATUS_FROM_EVENT = { time_in:'working', break_out:'on_break', break_in:'working', time_out:'out' };
-const STATUS_TEXT = { none:'Not clocked in', working:'Working', on_break:'On Break', out:'Done for today' };
-const BADGE_CLS = { none:'b-to', working:'b-ti', on_break:'b-bo', out:'b-to' };
+// ── Week range ────────────────────────────────────────────────
+function getWeekRange() {
+  // Compute Monday–Sunday using PHT
+  const phNow = new Date(Date.now() + PHT);
+  const dow = phNow.getUTCDay(); // 0=Sun
+  const toMon = dow === 0 ? 6 : dow - 1;
+  const dates = [];
+  for (let i = 0; i < 7; i++) {
+    dates.push(phDate(Date.now() + (i - toMon) * 86400000));
+  }
+  return { from: dates[0], to: dates[6], dates };
+}
 
-// ── Data loading ──────────────────────────────────────────────
-let todayEvents = [];
-let supabaseEvents = [];
+// ── Live data ─────────────────────────────────────────────────
+let todayEvents = [];     // from local IndexedDB
+let supabaseToday = [];   // from Supabase
+let weekEvents = [];      // from Supabase or IndexedDB, entire week
+
+// Merge: prefer Supabase when available
+function todaySource() { return supabaseToday.length ? supabaseToday : todayEvents; }
 
 async function loadData() {
   const today = todayKey();
   document.getElementById('logDate').textContent = today;
   document.getElementById('todayLabel').textContent = today;
 
-  // Local data
+  // Local
   todayEvents = await dbGetByDate(today);
-  todayEvents.sort((a,b) => b.timestamp > a.timestamp ? 1 : -1);
+  todayEvents.sort((a,b) => getTs(a) > getTs(b) ? 1 : -1);
 
-  // Supabase data (if configured)
-  supabaseEvents = [];
-  if (CFG.supabaseUrl && CFG.supabaseKey) {
-    try {
-      const r = await fetch(
-        `${CFG.supabaseUrl}/rest/v1/clock_events?date_key=eq.${today}&order=event_timestamp.desc&limit=500`,
-        { headers: { 'apikey': CFG.supabaseKey, 'Authorization': `Bearer ${CFG.supabaseKey}` } }
-      );
-      if (r.ok) supabaseEvents = await r.json();
-    } catch(_) {}
+  // Supabase — today
+  const sbToday = await sbFetch(`clock_events?date_key=eq.${today}&order=event_timestamp.asc&limit=500`);
+  supabaseToday = sbToday || [];
+
+  // Week
+  const range = getWeekRange();
+  document.getElementById('weekLabel').textContent = `${range.from} to ${range.to}`;
+  const sbWeek = await sbFetch(`clock_events?date_key=gte.${range.from}&date_key=lte.${range.to}&order=event_timestamp.asc&limit=2000`);
+  if (sbWeek) {
+    weekEvents = sbWeek;
+  } else {
+    weekEvents = await dbGetByDateRange(range.from, range.to);
   }
 
-  // Merge: supabase takes precedence for display; show local pending separately
   const pending = await dbGetPending();
   renderStats(pending.length);
   renderLog(pending);
   renderStatusGrid();
+  renderWeekly(range);
+  updateRefreshNote();
 }
 
 // ── Stats ─────────────────────────────────────────────────────
 function renderStats(pendingCount) {
-  const statusMap = {};
-  CFG.staff.forEach(s => { statusMap[s.id] = 'none'; });
-
-  // Compute status from local data
+  const src = todaySource();
   const byStaff = {};
-  [...todayEvents].reverse().forEach(ev => {
+  src.forEach(ev => {
     if (!byStaff[ev.staff_id]) byStaff[ev.staff_id] = [];
     byStaff[ev.staff_id].push(ev);
   });
 
+  const statusMap = {};
+  CFG.staff.forEach(s => { statusMap[s.id] = 'none'; });
   CFG.staff.forEach(s => {
-    const evs = byStaff[s.id] || [];
+    const evs = (byStaff[s.id] || []).sort((a,b) => getTs(a) > getTs(b) ? 1 : -1);
     if (evs.length) statusMap[s.id] = STATUS_FROM_EVENT[evs[evs.length-1].event_type] || 'none';
   });
 
@@ -402,13 +462,12 @@ function renderStats(pendingCount) {
   document.getElementById('sPend').textContent = pendingCount;
 }
 
-// ── Log table ─────────────────────────────────────────────────
+// ── Today's Log ───────────────────────────────────────────────
 function renderLog(pending) {
   const pendingIds = new Set(pending.map(p => p.id));
+  const useSupabase = supabaseToday.length > 0;
+  const source = useSupabase ? [...supabaseToday].reverse() : [...todayEvents].reverse();
   const body = document.getElementById('logBody');
-
-  // Use Supabase data if available, else local
-  const source = supabaseEvents.length > 0 ? supabaseEvents : todayEvents;
 
   if (!source.length) {
     body.innerHTML = `<tr><td colspan="4"><div class="empty"><span>📋</span>No events today yet</div></td></tr>`;
@@ -416,41 +475,163 @@ function renderLog(pending) {
   }
 
   body.innerHTML = source.map(ev => {
-    const ts = ev.event_timestamp || ev.timestamp;
-    const synced = ev.id && !pendingIds.has(ev.id) ? 'b-synced' : 'b-pend';
-    const syncLabel = synced === 'b-synced' ? 'Synced' : 'Pending';
+    const ts = getTs(ev);
+    // Supabase records are already synced; local records check the pending set
+    const synced = useSupabase || !pendingIds.has(ev.id);
     return `<tr>
-      <td>${fmtTime(ts)}</td>
+      <td>${fmtTimeIso(ts)}</td>
       <td>${esc(ev.staff_name)}</td>
       <td><span class="badge ${EVT_BADGE[ev.event_type]||''}">${esc(EVT_LABEL[ev.event_type]||ev.event_type)}</span></td>
-      <td><span class="badge ${synced}">${syncLabel}</span></td>
+      <td><span class="badge ${synced?'b-synced':'b-pend'}">${synced?'Synced':'Pending'}</span></td>
     </tr>`;
   }).join('');
 }
 
-// ── Staff status grid ─────────────────────────────────────────
+// ── Live Status ───────────────────────────────────────────────
 function renderStatusGrid() {
+  const src = todaySource();
   const byStaff = {};
-  [...todayEvents].forEach(ev => {
+  src.forEach(ev => {
     if (!byStaff[ev.staff_id]) byStaff[ev.staff_id] = [];
     byStaff[ev.staff_id].push(ev);
   });
 
   document.getElementById('statusGrid').innerHTML = CFG.staff.map(s => {
-    const evs = (byStaff[s.id] || []).sort((a,b) => a.timestamp > b.timestamp ? 1 : -1);
+    const evs = (byStaff[s.id] || []).sort((a,b) => getTs(a) > getTs(b) ? 1 : -1);
     const last = evs[evs.length-1] || null;
     const st = last ? (STATUS_FROM_EVENT[last.event_type] || 'none') : 'none';
     const col = avatarColor(s.name);
-    const lastTxt = last ? `${EVT_LABEL[last.event_type]} at ${fmtTime(last.timestamp)}` : 'No events today';
-    return `<div class="staff-card">
+    const lastTxt = last
+      ? `${EVT_LABEL[last.event_type]} at ${fmtTimeIso(getTs(last))}`
+      : 'No events today';
+    return `<div class="s-card">
       <div class="av" style="background:linear-gradient(135deg,${col})">${initials(s.name)}</div>
-      <div class="sc-info">
+      <div>
         <div class="sc-name">${esc(s.name)}</div>
         <div class="sc-status">${STATUS_TEXT[st]}</div>
         <div class="sc-last">${esc(lastTxt)}</div>
       </div>
     </div>`;
   }).join('');
+}
+
+// ── Weekly Timesheet ──────────────────────────────────────────
+function computeDayHours(dayEvs) {
+  // dayEvs sorted oldest→newest for one staff one day
+  let firstIn = null, lastOut = null, breakMs = 0, lastBreakOut = null;
+  dayEvs.forEach(ev => {
+    const t = new Date(getTs(ev));
+    if (ev.event_type === 'time_in' && !firstIn) firstIn = t;
+    if (ev.event_type === 'time_out') lastOut = t;
+    if (ev.event_type === 'break_out') lastBreakOut = t;
+    if (ev.event_type === 'break_in' && lastBreakOut) {
+      breakMs += t - lastBreakOut;
+      lastBreakOut = null;
+    }
+  });
+
+  const result = { inTime: firstIn, outTime: lastOut, breakMs, hoursStr: null };
+  if (firstIn && lastOut) {
+    const net = Math.max(0, (lastOut - firstIn) - breakMs);
+    const h = Math.floor(net / 3600000);
+    const m = Math.floor((net % 3600000) / 60000);
+    result.hoursStr = `${h}h ${String(m).padStart(2,'0')}m`;
+  }
+  return result;
+}
+
+function renderWeekly(range) {
+  const today = todayKey();
+  const byDateStaff = {};
+
+  weekEvents.forEach(ev => {
+    const dk = ev.date_key || phDate(new Date(getTs(ev)).getTime());
+    if (!byDateStaff[dk]) byDateStaff[dk] = {};
+    if (!byDateStaff[dk][ev.staff_id]) byDateStaff[dk][ev.staff_id] = { name: ev.staff_name, evs: [] };
+    byDateStaff[dk][ev.staff_id].evs.push(ev);
+  });
+
+  const content = document.getElementById('weekContent');
+  if (!range.dates.some(d => byDateStaff[d])) {
+    content.innerHTML = `<div class="empty"><span>📅</span>No events this week yet</div>`;
+    return;
+  }
+
+  content.innerHTML = range.dates.map(dateKey => {
+    const dayData = byDateStaff[dateKey];
+    const isToday = dateKey === today;
+    const hdr = fmtDateHeader(dateKey);
+
+    if (!dayData || !Object.keys(dayData).length) {
+      return `<div class="week-day${isToday?' today':''}">
+        <div class="week-day-hdr">${esc(hdr)}${isToday?' — TODAY':''}</div>
+        <div class="week-none">No clock events</div>
+      </div>`;
+    }
+
+    // Build staff rows sorted by time_in
+    const staffRows = Object.values(dayData)
+      .map(sd => {
+        const evs = sd.evs.sort((a,b) => getTs(a) > getTs(b) ? 1 : -1);
+        return { name: sd.name, ...computeDayHours(evs) };
+      })
+      .sort((a,b) => (a.inTime || 0) > (b.inTime || 0) ? 1 : -1);
+
+    const rows = staffRows.map(r => {
+      const inStr = r.inTime ? fmtTimeIso(r.inTime.toISOString()) : '—';
+      const outStr = r.outTime ? fmtTimeIso(r.outTime.toISOString()) : `<span class="still-in">Still in</span>`;
+      const breakStr = r.breakMs > 0
+        ? `${Math.round(r.breakMs/60000)}m`
+        : '—';
+      const hoursStr = r.hoursStr
+        ? `<span class="hours-chip">${r.hoursStr}</span>`
+        : (r.inTime ? '<span class="still-in">In progress</span>' : '—');
+      return `<tr>
+        <td>${esc(r.name)}</td>
+        <td>${inStr}</td>
+        <td>${outStr}</td>
+        <td>${breakStr}</td>
+        <td>${hoursStr}</td>
+      </tr>`;
+    }).join('');
+
+    return `<div class="week-day${isToday?' today':''}">
+      <div class="week-day-hdr">${esc(hdr)}${isToday?' — TODAY':''}</div>
+      <div class="tbl-wrap"><table>
+        <thead><tr><th>Staff</th><th>Time In</th><th>Time Out</th><th>Break</th><th>Net Hours</th></tr></thead>
+        <tbody>${rows}</tbody>
+      </table></div>
+    </div>`;
+  }).join('');
+}
+
+// ── Export CSV ────────────────────────────────────────────────
+function exportTodayCSV() {
+  const source = todaySource();
+  if (!source.length) { alert('No data to export today.'); return; }
+  const rows = [['Time','Staff ID','Staff Name','Event','Date']];
+  [...source].reverse().forEach(ev => {
+    rows.push([fmtTimeIso(getTs(ev)), ev.staff_id, ev.staff_name, ev.event_type, ev.date_key || todayKey()]);
+  });
+  downloadCSV(rows, `clockin-today-${todayKey()}.csv`);
+}
+
+function exportWeekCSV() {
+  if (!weekEvents.length) { alert('No data this week to export.'); return; }
+  const range = getWeekRange();
+  const rows = [['Date','Staff ID','Staff Name','Event','Time']];
+  weekEvents.forEach(ev => {
+    rows.push([ev.date_key || '', ev.staff_id, ev.staff_name, ev.event_type, fmtTimeIso(getTs(ev))]);
+  });
+  downloadCSV(rows, `clockin-week-${range.from}.csv`);
+}
+
+function downloadCSV(rows, filename) {
+  const csv = rows.map(r => r.map(c => `"${String(c).replace(/"/g,'""')}"`).join(',')).join('\n');
+  const a = document.createElement('a');
+  a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
+  a.download = filename;
+  a.click();
 }
 
 // ── Tabs ──────────────────────────────────────────────────────
@@ -469,31 +650,29 @@ function loadSettingsUI() {
 }
 
 function saveSupabase() {
-  CFG.supabaseUrl = document.getElementById('sbUrl').value.trim().replace(/\/$/, '');
+  CFG.supabaseUrl = document.getElementById('sbUrl').value.trim().replace(/\/$/,'');
   CFG.supabaseKey = document.getElementById('sbKey').value.trim();
   saveCFG();
   document.getElementById('sbMsg').textContent = '✓ Saved';
   document.getElementById('sbMsg').className = 'msg ok';
   document.getElementById('setupNotice').style.display = !CFG.supabaseUrl ? 'block' : 'none';
-  setTimeout(() => { document.getElementById('sbMsg').textContent = ''; }, 2000);
+  setTimeout(() => { document.getElementById('sbMsg').textContent = ''; }, 2500);
   loadData();
 }
 
 async function testSupabase() {
-  const url = document.getElementById('sbUrl').value.trim().replace(/\/$/, '');
+  const url = document.getElementById('sbUrl').value.trim().replace(/\/$/,'');
   const key = document.getElementById('sbKey').value.trim();
   const msg = document.getElementById('sbMsg');
-  if (!url || !key) { msg.textContent = '⚠️ Fill in URL and Key first'; msg.className='msg err'; return; }
-  msg.textContent = 'Testing…'; msg.className = 'msg';
+  if (!url || !key) { msg.textContent='⚠️ Fill URL and Key first'; msg.className='msg err'; return; }
+  msg.textContent='Testing…'; msg.className='msg';
   try {
     const r = await fetch(`${url}/rest/v1/clock_events?limit=1`, {
-      headers: { 'apikey': key, 'Authorization': `Bearer ${key}` }
+      headers:{'apikey':key,'Authorization':`Bearer ${key}`}
     });
-    if (r.ok) { msg.textContent = '✓ Connected!'; msg.className = 'msg ok'; }
-    else { msg.textContent = `✗ Error ${r.status}: ${await r.text()}`; msg.className = 'msg err'; }
-  } catch(e) {
-    msg.textContent = '✗ Could not reach Supabase — check URL'; msg.className = 'msg err';
-  }
+    if (r.ok) { msg.textContent='✓ Connected!'; msg.className='msg ok'; }
+    else { msg.textContent=`✗ Error ${r.status} — check key or create the table`; msg.className='msg err'; }
+  } catch(e) { msg.textContent='✗ Cannot reach Supabase — check URL'; msg.className='msg err'; }
 }
 
 function renderStaffList() {
@@ -528,41 +707,30 @@ function removeStaff(id) {
 }
 
 function clearLocalData() {
-  if (!confirm('Clear ALL local clock event data from this device? This cannot be undone.\n\nData already synced to Supabase is safe.')) return;
+  if (!confirm('Clear ALL local clock event data from this device?\n\nData already synced to Supabase is safe.')) return;
   dbClearAll().then(() => { alert('Local data cleared.'); loadData(); });
 }
 
 function copySQL() {
   navigator.clipboard.writeText(document.getElementById('sqlBlock').textContent)
     .then(() => alert('SQL copied to clipboard!'))
-    .catch(() => alert('Select the text and copy manually.'));
+    .catch(() => alert('Select the text manually and copy.'));
 }
 
-// ── Export CSV ────────────────────────────────────────────────
-function exportCSV() {
-  const source = supabaseEvents.length > 0 ? supabaseEvents : todayEvents;
-  if (!source.length) { alert('No data to export today.'); return; }
-
-  const rows = [['Time','Staff ID','Staff Name','Event','Date']];
-  source.forEach(ev => {
-    const ts = ev.event_timestamp || ev.timestamp;
-    rows.push([fmtTime(ts), ev.staff_id, ev.staff_name, ev.event_type, ev.date_key || todayKey()]);
-  });
-
-  const csv = rows.map(r => r.map(c => `"${String(c).replace(/"/g,'""')}"`).join(',')).join('\n');
-  const a = document.createElement('a');
-  a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
-  a.download = `clockin-${todayKey()}.csv`;
-  a.click();
-}
-
-// ── Network indicator ─────────────────────────────────────────
+// ── Network ───────────────────────────────────────────────────
 function setDot(online) {
   document.getElementById('dot').className = 'dot' + (online ? '' : ' off');
   document.getElementById('netTxt').textContent = online ? 'Online' : 'Offline';
 }
-window.addEventListener('online', () => { setDot(true); loadData(); });
+window.addEventListener('online',  () => { setDot(true);  loadData(); });
 window.addEventListener('offline', () => setDot(false));
+
+let lastRefresh = null;
+function updateRefreshNote() {
+  lastRefresh = new Date();
+  document.getElementById('refreshNote').textContent =
+    `· refreshed ${lastRefresh.toLocaleTimeString('en-PH',{hour:'2-digit',minute:'2-digit',timeZone:'Asia/Manila'})}`;
+}
 
 // ── Init ──────────────────────────────────────────────────────
 (async () => {
@@ -571,7 +739,7 @@ window.addEventListener('offline', () => setDot(false));
   await openDB();
   loadSettingsUI();
   await loadData();
-  setInterval(loadData, 30000); // refresh every 30s
+  setInterval(loadData, 15000); // refresh every 15s for near-live status
 })();
 </script>
 </body>

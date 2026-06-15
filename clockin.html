@@ -249,6 +249,17 @@ function dbTodayByStaff() {
   });
 }
 
+// ── Timezone helpers (always Philippine Standard Time, UTC+8) ─
+const PHT = 8 * 3600000;
+function phDate(ts) {
+  const d = new Date((ts || Date.now()) + PHT);
+  return `${d.getUTCFullYear()}-${String(d.getUTCMonth()+1).padStart(2,'0')}-${String(d.getUTCDate()).padStart(2,'0')}`;
+}
+function todayKey() { return phDate(); }
+function fmtTime(d) {
+  return d.toLocaleTimeString('en-PH',{hour:'2-digit',minute:'2-digit',second:'2-digit',timeZone:'Asia/Manila'});
+}
+
 // ── Status helpers ────────────────────────────────────────────
 const STATUS_FROM_EVENT = { time_in:'working', break_out:'on_break', break_in:'working', time_out:'out' };
 const STATUS_TEXT = { none:'Not clocked in today', working:'Currently working', on_break:'Currently on break', out:'Done for today' };
@@ -266,8 +277,6 @@ function actionsFor(status) {
   if (status === 'on_break') return ['break_in'];
   return ['time_in'];
 }
-function todayKey() { return new Date().toISOString().split('T')[0]; }
-function fmtTime(d) { return d.toLocaleTimeString('en-PH',{hour:'2-digit',minute:'2-digit',second:'2-digit'}); }
 function initials(name) { return name.split(' ').map(n=>n[0]).join('').slice(0,2).toUpperCase(); }
 function esc(s) { const d=document.createElement('div');d.textContent=s;return d.innerHTML; }
 
